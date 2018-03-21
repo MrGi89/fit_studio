@@ -1,0 +1,11 @@
+.hidden {
+    display: none;
+}
+.main {
+
+    font-weight: bold;
+}
+
+#search-bar {
+    margin-bottom: 12px;
+}

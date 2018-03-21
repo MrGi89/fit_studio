@@ -1,0 +1,46 @@
+{% extends 'control_panel/main.html' %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row" id="search-bar">
+            <div class="col-md-12">
+                <form action="#" method="GET">
+                    <div class="input-group">
+                        {% if search is None %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search">
+                        {% else %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
+                        {% endif %}
+                        <div class="input-group-btn">
+                            <input class="btn btn-primary" type="submit" value="Szukaj">
+                        </div>
+                    </div>
+                    <span class="clearfix"></span>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr class="bg-primary">
+                            <th class="text-center table-primary">Imię i Nazwisko</th>
+                            <th class="text-center">Tel.</th>
+                            <th class="text-center">Mail</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                            <tr>
+                                <td><a href="{% url 'show_member' member.pk %}">{{ member.first_name }} {{ member.last_name }}</a></td>
+                                <td>{{ member.phone }}</td>
+                                <td>{{ member.mail }}</td>
+                                <td class="text-center">{{ member.get_status_display }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

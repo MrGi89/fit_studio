@@ -1,0 +1,55 @@
+{% extends 'control_panel/main.html' %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row" id="search-bar">
+            <div class="col-md-12">
+                <form action="#" method="GET">
+                    <div class="input-group">
+                        {% if search is None %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search">
+                        {% else %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
+                        {% endif %}
+                        <div class="input-group-btn">
+                            <input class="btn btn-primary" type="submit" value="Szukaj">
+                        </div>
+                    </div>
+                    <span class="clearfix"></span>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Imię i Nazwisko</th>
+                            <th class="text-center">Numer tel.</th>
+                            <th class="text-center">E-mail</th>
+                            <th class="text-center">Opcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trainer in trainers %}
+                            <tr>
+                                <td><a href="">{{ trainer.first_name }} {{ trainer.last_name }}</a></td>
+                                <td>{{ trainer.phone }}</td>
+                                <td>{{ trainer.mail }}</td>
+                                <td class="text-center dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Akcja
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{% url 'update_trainer' trainer.pk %}">Modyfikuj</a></li>
+                                        <li><a href="{% url 'delete_trainer' trainer.pk %}">Usuń</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
