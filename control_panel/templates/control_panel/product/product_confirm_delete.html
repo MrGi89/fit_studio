@@ -1,0 +1,16 @@
+{% extends 'control_panel/main.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-6 col-md-offset-2">
+                <h2>Czy jesteś pewien, że chcesz usunąć produkt?</h2>
+                <form action="#" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Usuń</button>
+                    <span class="clearfix"></span>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

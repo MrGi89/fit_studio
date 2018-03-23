@@ -22,28 +22,27 @@
             <div class="col-md-12">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
-                        <tr>
+                        <tr class="bg-primary">
                             <th class="text-center">Imię i Nazwisko</th>
                             <th class="text-center">Numer tel.</th>
                             <th class="text-center">E-mail</th>
-                            <th class="text-center">Opcje</th>
+                            <th class="text-center">Edytuj</th>
+                            <th class="text-center">Usuń</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for trainer in trainers %}
                             <tr>
-                                <td><a href="">{{ trainer.first_name }} {{ trainer.last_name }}</a></td>
+                                <td>{{ trainer.first_name }} {{ trainer.last_name }}</td>
                                 <td>{{ trainer.phone }}</td>
                                 <td>{{ trainer.mail }}</td>
-                                <td class="text-center dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Akcja
-                                    <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="{% url 'update_trainer' trainer.pk %}">Modyfikuj</a></li>
-                                        <li><a href="{% url 'delete_trainer' trainer.pk %}">Usuń</a></li>
-                                    </ul>
+                                <td class="text-center col-md-1"><a href="{% url 'update_trainer' trainer.pk %}">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td class="text-center col-md-1"><a href="{% url 'delete_trainer' trainer.pk %}">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

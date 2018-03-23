@@ -18,7 +18,9 @@ from django.urls import path
 from django.conf.urls import url
 from control_panel.views import HomeView, LoginView, LogoutView, EditUserView, ShowMembersView, ShowMemberView, \
     CreateMemberView, UpdateMemberView, DeleteMemberView, ShowTrainersView, CreateTrainerView, \
-    UpdateTrainerView, DeleteTrainerView
+    UpdateTrainerView, DeleteTrainerView, ShowProductsView, CreateProductView, UpdateProductView, DeleteProductView, \
+    CreatePassView, DeletePassView, UpdatePassView, AddPassEntryView, ShowScheduleView, ShowGroupsView, \
+    DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, DeleteGroupView, UpdateGroupView
 
 
 urlpatterns = [
@@ -39,6 +41,31 @@ urlpatterns = [
     url(r'^trainer/create/$', CreateTrainerView.as_view(), name='create_trainer'),
     url(r'^trainer/update/(?P<pk>\d+)/$', UpdateTrainerView.as_view(), name='update_trainer'),
     url(r'^trainer/delete/(?P<pk>\d+)/$', DeleteTrainerView.as_view(), name='delete_trainer'),
+
+    url(r'^show_products/$', ShowProductsView.as_view(), name='show_products'),
+    url(r'^product/create/$', CreateProductView.as_view(), name='create_product'),
+    url(r'^product/update/(?P<pk>\d+)/$', UpdateProductView.as_view(), name='update_product'),
+    url(r'^product/delete/(?P<pk>\d+)/$', DeleteProductView.as_view(), name='delete_product'),
+
+    url(r'^show_groups/$', ShowGroupsView.as_view(), name='show_groups'),
+    url(r'^group/create/$', CreateGroupView.as_view(), name='create_group'),
+    url(r'^group/update/(?P<pk>\d+)/$', UpdateGroupView.as_view(), name='update_group'),
+    url(r'^group/delete/(?P<pk>\d+)/$', DeleteGroupView.as_view(), name='delete_group'),
+
+    url(r'^group/delete_member/(?P<group_id>\d+)/(?P<member_id>\d+)/(?P<next>\d)/$', DeleteGroupMemberView.as_view(),
+        name='delete_group_member'),
+    url(r'^group/add_member/(?P<group_id>\d+)/(?P<member_id>\d+)/$', AddGroupMemberView.as_view(),
+        name='add_group_member'),
+    url(r'^group/add_members/(?P<group_id>\d+)', AddGroupMembersView.as_view(),
+        name='add_group_members'),
+
+    url(r'^pass/create/(?P<member_id>\d+)/$', CreatePassView.as_view(), name='create_pass'),
+    url(r'^pass/update/(?P<pk>\d+)/$', UpdatePassView.as_view(), name='update_pass'),
+    url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
+
+    url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
+
+    url(r'^show_schedule/$', ShowScheduleView.as_view(), name='show_schedule'),
 
 ]
 

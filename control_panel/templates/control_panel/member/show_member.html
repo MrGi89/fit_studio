@@ -5,7 +5,7 @@
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h1 class="panel-title">{{ member.first_name }} {{ member.last_name }}</h1>
+                        <h1 class="panel-title"> {{ member.first_name }} {{ member.last_name }}</h1>
                     </div>
                     <div class="panel-body">
                         {{ member.description }}
@@ -29,20 +29,51 @@
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h1 class="panel-title">Aktualny karnet</h1>
+                        <h1 class="panel-title">Dodatkowe info</h1>
                     </div>
-                    <div class="panel-body">
-                        <table class="table">
-                            <tr></tr>
-                        </table>
-                    </div>
+                    <table class="table">
+                        <tr>
+                            <th>Aktualny karnet</th>
+                            <td colspan="2" class="text-right">{{ passes.first.product.name }} / {{ passes.first.get_status_display }}</td>
+                        </tr>
+                        <tr class="active">
+                            <th colspan="2" class="text-center">Grupy</th>
+                            <th class="text-center">Usuń z grupy</th>
+                        </tr>
+                            {% if member.group_set.all is not None %}
+                                {% for group in member.group_set.all %}
+                                    <tr>
+                                        <td class="col-md-4">{{ group.name }}</td>
+                                        <td class="col-md-4 text-center">{{ group.get_program_display }}</td>
+                                        <td class="col-md-4 text-center">
+                                            <a href="{% url 'delete_group_member' group.pk member.pk 1 %}">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                    </table>
                 </div>
             </div>
             <div class="col-md-4">
-                <a href="" class="btn btn-danger btn-block" role="button">Dodaj wejście</a>
-                <a href="" class="btn btn-primary btn-block" role="button">Dodaj karnet</a>
-                <a href="" class="btn btn-primary btn-block" role="button">Dodaj do grupy</a>
-                <a href="{% url 'update_member' member.pk %}" class="btn btn-primary btn-block" role="button">Modyfikuj</a>
+                {% if passes.last is not None %}
+                    <a href="{% url 'add_pass_entry' passes.first.pk %}" class="btn btn-danger btn-block" role="button">Dodaj wejście</a>
+                {% else %}
+                    <a href="" class="btn btn-danger btn-block" role="button">Dodaj wejście</a>
+                {% endif %}
+                <a href="{% url 'create_pass' member.pk %}" class="btn btn-primary btn-block" role="button">Dodaj karnet</a>
+                <a href="" class="btn btn-primary btn-block" data-toggle="dropdown" role="button" aria-expanded="true">
+                    Dodaj do grupy</a>
+                    <ul class="dropdown-menu">
+                        {% if groups is not None %}
+                            {% for group in groups %}
+                                <li><a href="{% url 'add_group_member' group.pk member.pk %}">{{ group.name }}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        <li><a href="{% url 'create_group' %}"><strong>Dodaj nową grupę</strong></a></li>
+                    </ul>
+                <a href="{% url 'update_member' member.pk %}" class="btn btn-primary btn-block move" role="button">Modyfikuj</a>
                 <a href="{% url 'delete_member' member.pk %}" class="btn btn-primary btn-block" role="button">Usuń</a>
             </div>
         </div>
@@ -57,29 +88,33 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Karnet</th>
+                                    <th class="text-center">Termin rozpoczęcia</th>
+                                    <th class="text-center">Termin zakończenia</th>
+                                    <th class="text-center">Wejścia</th>
                                     <th class="text-center">Cena</th>
                                     <th class="text-center">Status</th>
-                                    <th class="text-center">Opłacony?</th>
+                                    <th class="text-center">Usuń</th>
                                 </tr>
                             </thead>
-                            <tr class="success">
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center col-md-1"><input title="payment" type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center col-md-1"><input title="payment" type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center">TEST</td>
-                                <td class="text-center col-md-1"><input title="payment" type="checkbox"></td>
-                            </tr>
+                            <tbody>
+                            {% for pass in passes %}
+                                <tr>
+                                    <td class="text-center">{{ pass.product }}</td>
+                                    <td class="text-center">{{ pass.start_date }}</td>
+                                    <td class="text-center">{{ pass.end_date }}</td>
+                                    <td class="text-center">{{ pass.entries }} / {{ pass.product.available_entries }}</td>
+                                    <td class="text-center">{{ pass.product.price }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'update_pass' pass.pk %}">{{ pass.get_status_display }}</a>
+                                    </td>
+                                    <td class="text-center col-md-1">
+                                        <a href="{% url 'delete_pass' pass.pk %}">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>

@@ -1,8 +1,7 @@
 from django import forms
-
 from django.contrib.auth.models import User
 
-from control_panel.models import Member, Trainer
+from control_panel.models import Member, Trainer, Product, Pass, Group
 
 
 class LoginForm(forms.Form):
@@ -44,8 +43,9 @@ class EditUserForm(forms.ModelForm):
         user = super().save(commit=commit)
         new_password = self.cleaned_data['password']
         if new_password:
-            user.set_password()
+            user.set_password(new_password)
             user.save()
+        return user
 
 
 class MemberForm(forms.ModelForm):
@@ -79,3 +79,52 @@ class TrainerForm(forms.ModelForm):
         model = Trainer
         fields = '__all__'
 
+
+class ProductForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        form_control_fields = ['name', 'validity', 'available_entries', 'activity', 'price']
+        for field_name in form_control_fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class PassForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        form_control_fields = ['product', 'status', 'start_date']
+        for field_name in form_control_fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Pass
+        exclude = ('member', 'end_date', 'entries')
+
+
+class GroupForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        form_control_fields = ['name', 'level', 'program', 'trainer']
+        for field_name in form_control_fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Group
+        exclude = ('members', )
+
+
+class GroupAddMembersForm(forms.ModelForm):
+
+    class Meta:
+        model = Group
+        fields = ('members', )
+        widgets = {'members': forms.CheckboxSelectMultiple, }

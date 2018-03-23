@@ -1,11 +1,16 @@
 .hidden {
     display: none;
 }
-.main {
+.pretty {
 
     font-weight: bold;
 }
 
 #search-bar {
     margin-bottom: 12px;
+}
+
+.move {
+    margin-top: 5px;
+
 }
