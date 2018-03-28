@@ -5,6 +5,4 @@ $(function () {
         event.preventDefault();
         $(this).next().toggleClass('hidden');
     });
-
-
 });
