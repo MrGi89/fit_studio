@@ -12,7 +12,7 @@ from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
 
 
-from .models import Member, Group, Trainer, Pass, Product
+from .models import Member, Group, Trainer, Pass, Product, Entry
 from .forms import LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, \
     GroupAddMembersForm
 
@@ -258,14 +258,28 @@ class AddPassEntryView(LoginRequiredMixin, View):
                                            end_date=date.today() + timedelta(days=user_pass.product.validity))
             new_pass.entries = new_pass.entries + 1
             new_pass.save()
+            Entry.objects.create(current_pass=new_pass, date=date.today())
             return redirect('/show_member/{}'.format(user_pass.member.id))
 
         user_pass.entries = user_pass.entries + 1
+        Entry.objects.create(current_pass=user_pass, date=date.today())
         if user_pass.entries == user_pass.product.available_entries:
             user_pass.end_date = date.today()
         user_pass.save()
 
         return redirect('/show_member/{}'.format(user_pass.member.id))
+
+
+class DeletePassEntryView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+
+        entry = get_object_or_404(Entry, pk=pk)
+        current_pass = entry.current_pass
+        current_pass.entries = current_pass.entries - 1
+        current_pass.save()
+        entry.delete()
+        return redirect('/show_member/{}'.format(current_pass.member.id))
 
 
 class UpdatePassView(LoginRequiredMixin, View):
@@ -359,4 +373,33 @@ class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = Group
     template_name = './control_panel/group/group_confirm_delete.html'
     success_url = reverse_lazy('show_groups')
+
+
+class ShowPaymentsView(View):
+
+    def get(self, request):
+        passes = Pass.objects.filter(status=2).order_by('member')
+        pass_list = []
+        for item in passes:
+            if item.member.status == 1:
+                pass_list.append(item)
+
+        return render(request, template_name='control_panel/finances/show_unpaid.html', context={'passes': pass_list})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

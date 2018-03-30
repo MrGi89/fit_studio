@@ -19,8 +19,9 @@ from django.conf.urls import url
 from control_panel.views import HomeView, LoginView, LogoutView, EditUserView, ShowMembersView, ShowMemberView, \
     CreateMemberView, UpdateMemberView, DeleteMemberView, ShowTrainersView, CreateTrainerView, \
     UpdateTrainerView, DeleteTrainerView, ShowProductsView, CreateProductView, UpdateProductView, DeleteProductView, \
-    CreatePassView, DeletePassView, UpdatePassView, AddPassEntryView, ShowScheduleView, ShowGroupsView, \
-    DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, DeleteGroupView, UpdateGroupView
+    CreatePassView, DeletePassView, UpdatePassView, AddPassEntryView, DeletePassEntryView, ShowScheduleView, \
+    ShowGroupsView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, DeleteGroupView,\
+    UpdateGroupView, ShowPaymentsView
 
 
 urlpatterns = [
@@ -64,8 +65,11 @@ urlpatterns = [
     url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
 
     url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
+    url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
+
 
     url(r'^show_schedule/$', ShowScheduleView.as_view(), name='show_schedule'),
+    url(r'^show_unpaid/$', ShowPaymentsView.as_view(), name='show_unpaid'),
 
 ]
 

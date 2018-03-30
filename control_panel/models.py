@@ -60,3 +60,9 @@ class Group(models.Model):
     trainer = models.ForeignKey(Trainer, on_delete=None, related_name='groups', verbose_name='Instruktor')
     members = models.ManyToManyField(Member, verbose_name='Członkowie grupy')
 
+
+class Entry(models.Model):
+    current_pass = models.ForeignKey(Pass, on_delete=models.CASCADE)
+    date = models.DateField()
+
+

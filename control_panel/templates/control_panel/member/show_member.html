@@ -2,6 +2,13 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron primary">
+                    <h2 class="text-center"> {{ member.first_name }} {{ member.last_name }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -81,7 +88,7 @@
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h1 class="panel-title">Historia płatności</h1>
+                        <h1 class="panel-title">Historia karnetów</h1>
                     </div>
                     <div class="panel-body">
                         <table class="table">
@@ -91,6 +98,7 @@
                                     <th class="text-center">Termin rozpoczęcia</th>
                                     <th class="text-center">Termin zakończenia</th>
                                     <th class="text-center">Wejścia</th>
+                                    <th class="text-center">Dodaj wejście</th>
                                     <th class="text-center">Cena</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Usuń</th>
@@ -99,18 +107,41 @@
                             <tbody>
                             {% for pass in passes %}
                                 <tr>
-                                    <td class="text-center">{{ pass.product }}</td>
+                                    <td class="text-center"><a href="" class="passes">{{ pass.product }}</a></td>
                                     <td class="text-center">{{ pass.start_date }}</td>
                                     <td class="text-center">{{ pass.end_date }}</td>
                                     <td class="text-center">{{ pass.entries }} / {{ pass.product.available_entries }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'add_pass_entry' pass.pk %}"><span class="glyphicon glyphicon-plus"></span></a>
+                                    </td>
                                     <td class="text-center">{{ pass.product.price }}</td>
                                     <td class="text-center">
-                                        <a href="{% url 'update_pass' pass.pk %}">{{ pass.get_status_display }}</a>
+                                        <a class='status' href="{% url 'update_pass' pass.pk %}">{{ pass.get_status_display }}</a>
                                     </td>
                                     <td class="text-center col-md-1">
                                         <a href="{% url 'delete_pass' pass.pk %}">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </a>
+                                    </td>
+                                </tr>
+                                <tr class="hidden">
+                                    <td colspan="8">
+                                        <table class="table">
+                                            <tr class="active">
+                                                <th class="text-center">Data wejścia</th>
+                                                <th class="text-center">Usuń wejście</th>
+                                            </tr>
+                                        {% for entry in pass.entry_set.all %}
+                                            <tr class="text-center">
+                                                <td>{{ entry.date }}</td>
+                                                <td>
+                                                    <a href="{% url 'delete_pass_entry' entry.pk %}">
+                                                        <span class="glyphicon glyphicon-minus"></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </table>
                                     </td>
                                 </tr>
                             {% endfor %}
