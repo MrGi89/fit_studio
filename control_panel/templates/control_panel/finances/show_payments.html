@@ -1,0 +1,85 @@
+{% extends 'control_panel/main.html' %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="#" method="GET">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                {% if search is None %}
+                                    <input type="text" class="form-control" placeholder="Szukaj" name="search">
+                                {% else %}
+                                    <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
+                                {% endif %}
+                                <div class="input-group-btn">
+                                    <input class="btn btn-primary" type="submit" value="Szukaj">
+                                </div>
+                            </div>
+                            <span class="clearfix"></span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <label class="col-md-3">Data rozpoczęcia
+                            <input type="date" class="form-control">
+                        </label>
+                        <label class="col-md-3">Data zakończenia
+                            <input type="date" class="form-control">
+                        </label>
+                        <label class="col-md-3">Status użytkownika
+                            <select class="form-control">
+                                <option value="0">Wybierz</option>
+                                <option value="1">Aktywny</option>
+                                <option value="2">Nie aktywny</option>
+                            </select>
+                        </label>
+                        <label class="col-md-3">Status płatności
+                            <select class="form-control">
+                                <option value="0">Wybierz</option>
+                                <option value="1">Opłacony</option>
+                                <option value="2">Do zapłaty</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title text-center pretty">Finanse</h1>
+                    </div>
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center table-primary">Użytkownik</th>
+                                <th class="text-center">Karnet</th>
+                                <th class="text-center">Data rozpoczęcia</th>
+                                <th class="text-center">Data zakończenia</th>
+                                <th class="text-center">Wejścia</th>
+                                <th class="text-center">Cena</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pass in passes %}
+                                <tr>
+                                    <td>{{ pass.member.first_name }} {{ pass.member.last_name }}</td>
+                                    <td>{{ pass.product.name }}</td>
+                                    <td class="text-center">{{ pass.start_date }}</td>
+                                    <td class="text-center">{{ pass.end_date }}</td>
+                                    <td class="text-center">{{ pass.entries }} / {{ pass.product.available_entries }}</td>
+                                    <td class="text-center">{{ pass.product.price }}</td>
+                                    <td class="text-center payment">{{ pass.get_status_display }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
