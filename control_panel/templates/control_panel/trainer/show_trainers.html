@@ -2,58 +2,63 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-        <div class="col-md-12">
-            <form action="#" method="GET">
-                <div class="input-group">
-                    {% if search is None %}
-                        <input type="text" class="form-control" placeholder="Szukaj" name="search">
-                    {% else %}
-                        <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
-                    {% endif %}
-                    <div class="input-group-btn">
-                        <input class="btn btn-primary" type="submit" value="Szukaj">
+            <div class="col-md-12">
+                <form action="#" method="GET">
+                    <div class="input-group">
+                        {% if search is None %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search">
+                        {% else %}
+                            <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
+                        {% endif %}
+                        <div class="input-group-btn">
+                            <input class="btn btn-primary" type="submit" value="Szukaj">
+                        </div>
                     </div>
-                </div>
-                <span class="clearfix"></span>
-            </form>
-
+                    <span class="clearfix"></span>
+                </form>
+            </div>
         </div>
-        </div><br>
+        <br>
         <div class="row">
             <div class="col-md-12">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h1 class="panel-title text-center pretty">Instruktorzy</h1>
-                </div>
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Imię i Nazwisko</th>
-                            <th class="text-center">Numer tel.</th>
-                            <th class="text-center">E-mail</th>
-                            <th class="text-center">Edytuj</th>
-                            <th class="text-center">Usuń</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for trainer in trainers %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title text-center">Instruktorzy</h1>
+                    </div>
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
                             <tr>
-                                <td>{{ trainer.first_name }} {{ trainer.last_name }}</td>
-                                <td class="text-center">{{ trainer.phone }}</td>
-                                <td class="text-center">{{ trainer.mail }}</td>
-                                <td class="text-center col-md-1"><a href="{% url 'update_trainer' trainer.pk %}">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                    </a>
-                                </td>
-                                <td class="text-center col-md-1"><a href="{% url 'delete_trainer' trainer.pk %}">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                    </a>
-                                </td>
+                                <th class="text-center">Imię i Nazwisko</th>
+                                <th class="text-center">Numer tel.</th>
+                                <th class="text-center">E-mail</th>
+                                <th class="text-center">Edytuj</th>
+                                <th class="text-center">Usuń</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {% for trainer in trainers %}
+                                <tr>
+                                    <td>{{ trainer.first_name }} {{ trainer.last_name }}</td>
+                                    <td class="text-center">{{ trainer.phone }}</td>
+                                    <td class="text-center">{{ trainer.mail }}</td>
+                                    <td class="text-center col-md-1"><a href="{% url 'update_trainer' trainer.pk %}">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        </a>
+                                    </td>
+                                    <td class="text-center col-md-1"><a href="{% url 'delete_trainer' trainer.pk %}">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center"><a href="{% url 'create_trainer' %}">Kliknij aby dodać nowego instruktora</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+    </div>
 {% endblock %}

@@ -3,11 +3,11 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6 col-md-6 col-md-offset-2">
-                <h2>Czy jesteś pewien, że chcesz usunąć użytkownika?</h2>
+                <h3>Czy jesteś pewien, że chcesz usunąć użytkownika?</h3>
                 <form action="#" method="POST">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Usuń</button>
+                    <button class="btn btn-md btn-primary btn-block" type="submit">Usuń</button>
                     <span class="clearfix"></span>
                 </form>
             </div>

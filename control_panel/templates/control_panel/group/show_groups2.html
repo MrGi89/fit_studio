@@ -1,92 +1,84 @@
 {% extends 'control_panel/main.html' %}
 {% block content %}
     <div class="container-fluid">
-        <div class="row" id="search-bar">
-            <div class="col-md-12">
-                <form action="#" method="GET">
-                    <div class="input-group">
-                        {% if search is None %}
-                            <input type="text" class="form-control" placeholder="Szukaj" name="search">
-                        {% else %}
-                            <input type="text" class="form-control" placeholder="Szukaj" name="search" value="{{ search }}">
-                        {% endif %}
-                        <div class="input-group-btn">
-                            <input class="btn btn-primary" type="submit" value="Szukaj">
-                        </div>
-                    </div>
-                    <span class="clearfix"></span>
-                </form>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-12">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr class="bg-primary">
-                            <th class="text-center table-primary">Nazwa</th>
-                            <th class="text-center">Poziom</th>
-                            <th class="text-center">Liczba członków</th>
-                            <th class="text-center">Program</th>
-                            <th class="text-center">Instruktor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for group in groups %}
-                            <tr class="dropdown_item">
-                                <td>{{ group.name }}</td>
-                                <td>{{ group.get_level_display }}</td>
-                                <td class="text-center col-md-2">{{ group.members.all | length }}</td>
-                                <td class="text-center">{{ group.get_program_display }}</td>
-                                <td>{{ group.trainer.first_name }} {{ group.trainer.last_name }}</td>
-                            </tr>
-                            <tr class="hidden">
-                                <td colspan="5">
-                                    <div class="col-md-8">
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                <h1 class="panel-title text-center">Członkowie</h1>
-                                            </div>
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Imię i Nazwisko</th>
-                                                        <th class="text-center">Numer tel.</th>
-                                                        <th class="text-center">E-mail</th>
-                                                        <th class="text-center">Status</th>
-                                                        <th class="text-center">Usuń z grupy</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% if group.members.all is not None %}
-                                                    {% for member in group.members.all %}
-                                                        <tr>
-                                                            <td class="text-center"><a href="{% url 'show_member' member.pk %}">{{ member.first_name }} {{ member.last_name }}</a></td>
-                                                            <td class="text-center">{{ member.phone }}</td>
-                                                            <td class="text-center">{{ member.mail }}</td>
-                                                            <td class="text-center">{{ member.get_status_display }}</td>
-                                                            <td class="text-center">
-                                                                <a href="{% url 'delete_group_member' group.id member.id 0 %}">
-                                                                <span class="glyphicon glyphicon-trash"></span>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                {% endif %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <a href="{% url 'add_group_members' group.pk %}" class="btn btn-primary btn-block" role="button">Dodaj/Usuń członków</a>
-                                        <a href="{% url 'update_group' group.pk %}" class="btn btn-primary btn-block" role="button">Modyfikuj grupę</a>
-                                        <a href="{% url 'delete_group' group.pk %}" class="btn btn-primary btn-block" role="button">Usuń grupę</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <a href="" class="btn btn-primary btn-block pretty" id="option" role="button">Wybierz grupę</a>
+                {% for group in groups %}
+                    <a href="" class="btn btn-default btn-block hidden" role="button">{{ group.name }}</a>
+                {% endfor %}
             </div>
         </div>
+        <br>
+        {% for group in groups %}
+            <div class="group hidden">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h1 class="panel-title">{{ group.name }}</h1>
+                            </div>
+                            <table class="table">
+                                <tr>
+                                    <th>Nazwa</th><td class="text-right"> {{ group.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Poziom</th><td class="text-right">{{ group.get_level_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Liczba członków</th><td class="text-right">{{ group.members.all | length }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Program</th><td class="text-right">{{ group.get_program_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Instruktor</th><td class="text-right">{{ group.trainer.first_name }} {{ group.trainer.last_name }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'add_group_members' group.pk %}" class="btn btn-primary btn-block" role="button">Dodaj/Usuń członków</a>
+                        <a href="{% url 'update_group' group.pk %}" class="btn btn-primary btn-block" role="button">Modyfikuj grupę</a>
+                        <a href="{% url 'delete_group' group.pk %}" class="btn btn-primary btn-block" role="button">Usuń grupę</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h1 class="panel-title text-center">Członkowie</h1>
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Imię i Nazwisko</th>
+                                        <th class="text-center">Numer tel.</th>
+                                        <th class="text-center">E-mail</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Usuń z grupy</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for member in group.members.all %}
+                                        <tr>
+                                            <td class="text-center"><a href="{% url 'show_member' member.pk %}">{{ member.first_name }} {{ member.last_name }}</a></td>
+                                            <td class="text-center">{{ member.phone }}</td>
+                                            <td class="text-center">{{ member.mail }}</td>
+                                            <td class="text-center">{{ member.get_status_display }}</td>
+                                            <td class="text-center">
+                                                <a href="{% url 'delete_group_member' group.id member.id 0 %}">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

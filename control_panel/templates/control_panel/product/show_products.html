@@ -1,7 +1,7 @@
 {% extends 'control_panel/main.html' %}
 {% block content %}
     <div class="container-fluid">
-        <div class="row" id="search-bar">
+        <div class="row">
             <div class="col-md-12">
                 <form action="#" method="GET">
                     <div class="input-group">
@@ -18,40 +18,50 @@
                 </form>
             </div>
         </div>
+        <br>
         <div class="row">
             <div class="col-md-12">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr class="bg-primary">
-                            <th class="text-center col-md-4">Nazwa</th>
-                            <th class="text-center col-md-2">Termin ważności</th>
-                            <th class="text-center col-md-1">Ilość wejść</th>
-                            <th class="text-center col-md-2">Rodzaj</th>
-                            <th class="text-center col-md-2">Cena</th>
-                            <th class="text-center col-md-1">Edytuj</th>
-                            <th class="text-center col-md-1">Usuń</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in products %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title text-center">Produkty</h1>
+                    </div>
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
                             <tr>
-                                <td>{{ product.name }}</td>
-                                <td class="text-center">{{ product.validity }}</td>
-                                <td class="text-center">{{ product.available_entries }}</td>
-                                <td class="text-center">{{ product.get_activity_display }}</td>
-                                <td class="text-center">{{ product.price }}</td>
-                                <td class="text-center col-md-1"><a href="{% url 'update_product' product.pk %}">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                    </a>
-                                </td>
-                                <td class="text-center col-md-1"><a href="{% url 'delete_product' product.pk %}">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                    </a>
-                                </td>
+                                <th class="text-center col-md-4">Nazwa</th>
+                                <th class="text-center col-md-2">Termin ważności</th>
+                                <th class="text-center col-md-1">Ilość wejść</th>
+                                <th class="text-center col-md-2">Rodzaj</th>
+                                <th class="text-center col-md-2">Cena</th>
+                                <th class="text-center col-md-1">Edytuj</th>
+                                <th class="text-center col-md-1">Usuń</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td class="text-center">{{ product.validity }}</td>
+                                    <td class="text-center">{{ product.available_entries }}</td>
+                                    <td class="text-center">{{ product.get_activity_display }}</td>
+                                    <td class="text-center">{{ product.price }}</td>
+                                    <td class="text-center col-md-1"><a href="{% url 'update_product' product.pk %}">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        </a>
+                                    </td>
+                                    <td class="text-center col-md-1"><a href="{% url 'delete_product' product.pk %}">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center"><a href="{% url 'create_product' %}">Kliknij aby dodać nowy produkt</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

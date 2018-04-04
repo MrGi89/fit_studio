@@ -2,7 +2,7 @@ from datetime import date
 
 from django.db import models
 
-TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
+TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nie  aktywny'))
 TYPE_OF_LEVEL = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
 TYPE_OF_PAYMENT = ((1, 'Opłacony'), (2, 'Do zapłaty'))
 TYPE_OF_ACTIVITY = ((1, 'Jumping'), (2, 'Pole Dance'), (3, 'Stretching'))
@@ -49,7 +49,7 @@ class Pass(models.Model):
     product = models.ForeignKey(Product, on_delete=None, verbose_name='Karnet')
     status = models.SmallIntegerField(choices=TYPE_OF_PAYMENT, default=2, verbose_name='Status')
     start_date = models.DateField(default=date.today(), verbose_name='Data rozpoczęcia')
-    end_date = models.DateField()
+    end_date = models.DateField(verbose_name='Data zakończenia')
     entries = models.SmallIntegerField(default=0)
 
 
@@ -57,7 +57,8 @@ class Group(models.Model):
     name = models.CharField(max_length=64, verbose_name='Nazwa')
     level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, verbose_name='Poziom', default=1)
     program = models.IntegerField(choices=TYPE_OF_ACTIVITY, verbose_name='Rodzaj zajęć')
-    trainer = models.ForeignKey(Trainer, on_delete=None, related_name='groups', verbose_name='Instruktor')
+    trainer = models.ForeignKey(Trainer, models.SET_NULL, null=True, blank=True, related_name='groups',
+                                verbose_name='Instruktor')
     members = models.ManyToManyField(Member, verbose_name='Członkowie grupy')
 
 

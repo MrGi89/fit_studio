@@ -1,6 +1,5 @@
 from datetime import timedelta, date
 
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -11,9 +10,8 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
 
-
 from .models import Member, Group, Trainer, Pass, Product, Entry
-from .forms import LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, \
+from .forms import LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, UpdatePassForm, GroupForm,\
     GroupAddMembersForm
 
 
@@ -48,6 +46,14 @@ class LogoutView(View):
         return redirect('/login')
 
 
+class LoginAsAnonymous(View):
+
+    def get(self, request):
+        user = authenticate(username='tester', password='!Qazxsw2')
+        login(request, user)
+        return HttpResponseRedirect(reverse('home'))
+
+
 class EditUserView(LoginRequiredMixin, View):
 
     def get(self, request, user_id):
@@ -58,6 +64,10 @@ class EditUserView(LoginRequiredMixin, View):
     def post(self, request, user_id):
         user = User.objects.get(pk=user_id)
         form = EditUserForm(request.POST, instance=user)
+        if user.username == 'tester':
+            form.add_error('first_name', 'Tester nie może zmienić użytkownika')
+            return render(request, template_name='control_panel/edit_user.html', context={'form': form})
+
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -228,24 +238,46 @@ class CreatePassView(LoginRequiredMixin, CreateView):
     template_name = './control_panel/pass/pass_form.html'
 
 
-class DeletePassView(LoginRequiredMixin, DeleteView):
+class UpdatePassView(LoginRequiredMixin, UpdateView):
 
+    form_class = UpdatePassForm
+    template_name = './control_panel/pass/pass_update_form.html'
     model = Pass
-    template_name = './control_panel/pass/pass_confirm_delete.html'
-    success_url = reverse_lazy('show_products')
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        self.member_id = instance.member.id
+        self.pass_id = instance.id
         instance.save()
 
-        return redirect(self.get_success_url(member_id=self.member_id))
+        return redirect(self.get_success_url(pass_id=self.pass_id))
 
     def get_success_url(self, **kwargs):
-        pass_ = Pass.objects.get(pk=self.kwargs.get('pk'))
-        member_id = pass_.member.id
+        member = Pass.objects.get(pk=self.kwargs.get('pk')).member
         if kwargs is not None:
-            return reverse_lazy('show_member', kwargs={'pk': member_id})
+            return reverse_lazy('show_member', kwargs={'pk': member.id})
+
+
+class DeletePassView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+
+        current_pass = get_object_or_404(Pass, pk=pk)
+        entries = current_pass.entry_set.all()
+        message = []
+
+        if current_pass.status == 1:
+            message.append('karnet został opłacony')
+        if entries:
+            message.append('karnet został częściowo wykorzystany')
+
+        return render(request, template_name='control_panel/pass/pass_confirm_delete.html', context={'message': message})
+
+    def post(self, request, pk):
+
+        current_pass = get_object_or_404(Pass, pk=pk)
+        user = current_pass.member
+        current_pass.delete()
+        return redirect('/show_member/{}'.format(user.id))
 
 
 class AddPassEntryView(LoginRequiredMixin, View):
@@ -260,6 +292,10 @@ class AddPassEntryView(LoginRequiredMixin, View):
             new_pass.save()
             Entry.objects.create(current_pass=new_pass, date=date.today())
             return redirect('/show_member/{}'.format(user_pass.member.id))
+
+        if user_pass.entries == 0:
+            user_pass.start_date = date.today()
+            user_pass.end_date = date.today() + timedelta(days=user_pass.product.validity)
 
         user_pass.entries = user_pass.entries + 1
         Entry.objects.create(current_pass=user_pass, date=date.today())
@@ -282,7 +318,7 @@ class DeletePassEntryView(LoginRequiredMixin, View):
         return redirect('/show_member/{}'.format(current_pass.member.id))
 
 
-class UpdatePassView(LoginRequiredMixin, View):
+class UpdatePassStatusView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         user_pass = get_object_or_404(Pass, pk=pk)
@@ -375,31 +411,40 @@ class DeleteGroupView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('show_groups')
 
 
-class ShowPaymentsView(View):
+class ShowPaymentsView(LoginRequiredMixin, View):
 
     def get(self, request):
-        passes = Pass.objects.filter(status=2).order_by('member')
-        pass_list = []
-        for item in passes:
-            if item.member.status == 1:
-                pass_list.append(item)
+        search = request.GET.get('search')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        user_status = request.GET.get('user_status')
+        pass_status = request.GET.get('pass_status')
+        passes = Pass.objects.all()
 
-        return render(request, template_name='control_panel/finances/show_unpaid.html', context={'passes': pass_list})
+        if start_time:
+            passes = passes.filter(start_date__gte=start_time)
+        if end_time:
+            passes = passes.filter(end_date__lte=end_time)
+        if pass_status:
+            if pass_status == '1':
+                passes = passes.filter(status=1)
+            elif pass_status == '2':
+                passes = passes.filter(status=2)
 
+        if user_status:
+            if user_status == '1':
+                passes = passes.filter(member__status=1)
+            elif user_status == '2':
+                passes = passes.filter(member__status=2)
 
+        if search:
+            passes = passes.filter(Q(member__first_name__icontains=search) | Q(member__last_name__icontains=search))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return render(request, template_name='control_panel/finances/show_payments.html',
+                      context={'passes': passes,
+                               'search': search,
+                               'start_time': start_time,
+                               'end_time': end_time,
+                               'user_status': user_status,
+                               'pass_status': pass_status
+                               })

@@ -3,11 +3,12 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6 col-md-6 col-md-offset-2">
-                <h2>Dodaj nowy produkt</h2>
+                <h3>Dodaj nowy produkt</h3>
+                <br>
                 <form class="form-signin" action="#" method="POST">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Zapisz</button>
+                    <button class="btn btn-md btn-primary btn-block" type="submit">Zapisz</button>
                     <span class="clearfix"></span>
                 </form>
             </div>

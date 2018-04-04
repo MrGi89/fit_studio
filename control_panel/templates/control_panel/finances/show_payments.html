@@ -22,23 +22,43 @@
                     <br>
                     <div class="row">
                         <label class="col-md-3">Data rozpoczęcia
-                            <input type="date" class="form-control">
+                            <input type="date" class="form-control" name="start_time" value="{{ start_time }}">
                         </label>
                         <label class="col-md-3">Data zakończenia
-                            <input type="date" class="form-control">
+                            <input type="date" class="form-control" name="end_time" value="{{ end_time }}">
                         </label>
                         <label class="col-md-3">Status użytkownika
-                            <select class="form-control">
-                                <option value="0">Wybierz</option>
+                            <select class="form-control" name="user_status">
+                            {% if user_status == '1' %}
                                 <option value="1">Aktywny</option>
                                 <option value="2">Nie aktywny</option>
+                                <option value="0">Wszyscy</option>
+                            {% elif user_status == '2' %}
+                                <option value="2">Nie aktywny</option>
+                                <option value="1">Aktywny</option>
+                                <option value="0">Wszyscy</option>
+                            {% else %}
+                                <option value="0">Wszyscy</option>
+                                <option value="1">Aktywny</option>
+                                <option value="2">Nie aktywny</option>
+                            {% endif %}
                             </select>
                         </label>
                         <label class="col-md-3">Status płatności
-                            <select class="form-control">
-                                <option value="0">Wybierz</option>
+                            <select class="form-control" name="pass_status">
+                            {% if pass_status == '1' %}
                                 <option value="1">Opłacony</option>
                                 <option value="2">Do zapłaty</option>
+                                <option value="0">Wszytkie</option>
+                            {% elif pass_status == '2' %}
+                                <option value="2">Do zapłaty</option>
+                                <option value="1">Opłacony</option>
+                                <option value="0">Wszytkie</option>
+                            {% else %}
+                                <option value="0">Wszytkie</option>
+                                <option value="1">Opłacony</option>
+                                <option value="2">Do zapłaty</option>
+                            {% endif %}
                             </select>
                         </label>
                     </div>
@@ -56,18 +76,20 @@
                         <thead>
                             <tr>
                                 <th class="text-center table-primary">Użytkownik</th>
+                                <th class="text-center">Status użytkownika</th>
                                 <th class="text-center">Karnet</th>
                                 <th class="text-center">Data rozpoczęcia</th>
                                 <th class="text-center">Data zakończenia</th>
                                 <th class="text-center">Wejścia</th>
                                 <th class="text-center">Cena</th>
-                                <th class="text-center">Status</th>
+                                <th class="text-center">Status karnetu</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for pass in passes %}
                                 <tr>
                                     <td>{{ pass.member.first_name }} {{ pass.member.last_name }}</td>
+                                    <td class="text-center">{{ pass.member.get_status_display }}</td>
                                     <td>{{ pass.product.name }}</td>
                                     <td class="text-center">{{ pass.start_date }}</td>
                                     <td class="text-center">{{ pass.end_date }}</td>

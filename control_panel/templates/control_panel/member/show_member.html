@@ -2,9 +2,13 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
-                <div class="jumbotron primary">
-                    <h2 class="text-center"> {{ member.first_name }} {{ member.last_name }}</h2>
+            <div class="col-md-2">
+                {% load static %}
+                <img src="{% static "images/inspiral_poledance_001.jpg" %}" height="100%" width="100%" style="{border-radius: 25px}">
+            </div>
+            <div class="col-md-10">
+                <div class="jumbotron">
+                    <h1 class="text-left"> {{ member.first_name }} {{ member.last_name }}</h1>
                 </div>
             </div>
         </div>
@@ -12,10 +16,7 @@
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h1 class="panel-title"> {{ member.first_name }} {{ member.last_name }}</h1>
-                    </div>
-                    <div class="panel-body">
-                        {{ member.description }}
+                        <h1 class="panel-title">Informacje</h1>
                     </div>
                     <table class="table">
                         <tr>
@@ -30,37 +31,52 @@
                             <th>Status</th>
                             <td class="text-right">{{ member.get_status_display }}</td>
                         </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">Dodatkowe info</h1>
-                    </div>
-                    <table class="table">
                         <tr>
                             <th>Aktualny karnet</th>
                             <td colspan="2" class="text-right">{{ passes.first.product.name }} / {{ passes.first.get_status_display }}</td>
                         </tr>
-                        <tr class="active">
-                            <th colspan="2" class="text-center">Grupy</th>
-                            <th class="text-center">Usuń z grupy</th>
-                        </tr>
-                            {% if member.group_set.all is not None %}
-                                {% for group in member.group_set.all %}
-                                    <tr>
-                                        <td class="col-md-4">{{ group.name }}</td>
-                                        <td class="col-md-4 text-center">{{ group.get_program_display }}</td>
-                                        <td class="col-md-4 text-center">
-                                            <a href="{% url 'delete_group_member' group.pk member.pk 1 %}">
-                                                <span class="glyphicon glyphicon-trash"></span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
                     </table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">Notatka</h1>
+                        </div>
+                        <div class="panel-body">
+                            {% if member.description %}
+                                {{ member.description }}
+                            {% else %}
+                                <a href="{% url 'update_member' member.pk %}">Dodaj notatkę</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">Grupy</h1>
+                        </div>
+
+                        <table class="table">
+                            {% for group in member.group_set.all %}
+                                <tr>
+                                    <td class="col-md-4">{{ group.name }}</td>
+                                    <td class="col-md-4 text-center">{{ group.get_program_display }}</td>
+                                    <td class="col-md-4 text-center">
+                                        <a href="{% url 'delete_group_member' group.pk member.pk 1 %}">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td class="col-md-4 text-left">Użytkownik nie jest członkiem żadnej z grup</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
@@ -101,6 +117,7 @@
                                     <th class="text-center">Dodaj wejście</th>
                                     <th class="text-center">Cena</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Edytuj</th>
                                     <th class="text-center">Usuń</th>
                                 </tr>
                             </thead>
@@ -116,7 +133,12 @@
                                     </td>
                                     <td class="text-center">{{ pass.product.price }}</td>
                                     <td class="text-center">
-                                        <a class='status' href="{% url 'update_pass' pass.pk %}">{{ pass.get_status_display }}</a>
+                                        <a class='status' href="{% url 'update_pass_status' pass.pk %}">{{ pass.get_status_display }}</a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a class='status' href="{% url 'update_pass' pass.pk %}">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </a>
                                     </td>
                                     <td class="text-center col-md-1">
                                         <a href="{% url 'delete_pass' pass.pk %}">
@@ -143,6 +165,10 @@
                                         {% endfor %}
                                         </table>
                                     </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center"><a href="{% url 'create_pass' member.pk %}">Kliknij aby dodać nowy karnet</a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>

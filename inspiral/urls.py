@@ -19,9 +19,9 @@ from django.conf.urls import url
 from control_panel.views import HomeView, LoginView, LogoutView, EditUserView, ShowMembersView, ShowMemberView, \
     CreateMemberView, UpdateMemberView, DeleteMemberView, ShowTrainersView, CreateTrainerView, \
     UpdateTrainerView, DeleteTrainerView, ShowProductsView, CreateProductView, UpdateProductView, DeleteProductView, \
-    CreatePassView, DeletePassView, UpdatePassView, AddPassEntryView, DeletePassEntryView, ShowScheduleView, \
-    ShowGroupsView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, DeleteGroupView,\
-    UpdateGroupView, ShowPaymentsView
+    CreatePassView, DeletePassView, UpdatePassView, UpdatePassStatusView, AddPassEntryView, DeletePassEntryView, \
+    ShowScheduleView, ShowGroupsView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, \
+    DeleteGroupView, UpdateGroupView, ShowPaymentsView, LoginAsAnonymous
 
 
 urlpatterns = [
@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^edit_user/(?P<user_id>\d+)/$', EditUserView.as_view(), name='edit_user'),
+    url(r'^tester_login/$', LoginAsAnonymous.as_view(), name='tester_login'),
 
     url(r'^show_members/$', ShowMembersView.as_view(), name='show_members'),
     url(r'^show_member/(?P<pk>\d+)/$', ShowMemberView.as_view(), name='show_member'),
@@ -63,13 +64,15 @@ urlpatterns = [
     url(r'^pass/create/(?P<member_id>\d+)/$', CreatePassView.as_view(), name='create_pass'),
     url(r'^pass/update/(?P<pk>\d+)/$', UpdatePassView.as_view(), name='update_pass'),
     url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
+    url(r'^pass/update_status/(?P<pk>\d+)/$', UpdatePassStatusView.as_view(), name='update_pass_status'),
 
     url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
     url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
 
 
     url(r'^show_schedule/$', ShowScheduleView.as_view(), name='show_schedule'),
-    url(r'^show_unpaid/$', ShowPaymentsView.as_view(), name='show_unpaid'),
+    url(r'^show_payments/$', ShowPaymentsView.as_view(), name='show_payments'),
+
 
 ]
 

@@ -6,11 +6,11 @@
     <title>Home page</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     {% load static %}
-    <link rel="stylesheet" href= "{% static "../static/stylesheet.css" %}">
+    <link rel="stylesheet" href= "{% static "/stylesheet.css" %}">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="{% static "../static/app.js" %}"></script>
+    <script type="text/javascript" src="{% static "/app.js" %}"></script>
 </head>
 <body>
 
@@ -40,7 +40,7 @@
             <li><a class="pretty" href="{% url 'show_products' %}">Produkty</a></li>
             <li><a class="pretty" href="{% url 'show_groups' %}">Grupy</a></li>
             <li><a class="pretty" href="{% url 'show_schedule' %}">Grafik</a></li>
-            <li><a class="pretty" href="{% url 'show_unpaid' %}">Finanse</a></li>
+            <li><a class="pretty" href="{% url 'show_payments' %}">Finanse</a></li>
             <li>
                 <a class="pretty dropdown_item" href="">Dodaj</a>
                 <ul class="nav nav-pills nav-stacked hidden" id="content">
@@ -56,7 +56,11 @@
 
     <div class="col-sm-10 col-md-10">
         {% block content %}
-
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Witaj w inSpiral - profesjonalnym programie do zarządzania studiem Pole-dance</h1>
+                </div>
+            </div>
         {% endblock %}
     </div>
 </div>

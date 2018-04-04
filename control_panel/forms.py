@@ -28,6 +28,11 @@ class EditUserForm(forms.ModelForm):
     class Meta:
         fields = ('first_name', 'last_name', 'email')
         model = User
+        labels = {
+            'first_name': 'Imię',
+            'last_name': 'Nazwisko',
+            'email': 'Adres e-mail',
+        }
         
     def clean(self):
         email = self.cleaned_data['email']
@@ -108,6 +113,20 @@ class PassForm(forms.ModelForm):
         exclude = ('member', 'end_date', 'entries')
 
 
+class UpdatePassForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        form_control_fields = ['start_date', 'end_date']
+        for field_name in form_control_fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Pass
+        fields = ('start_date', 'end_date')
+
+
 class GroupForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -128,3 +147,5 @@ class GroupAddMembersForm(forms.ModelForm):
         model = Group
         fields = ('members', )
         widgets = {'members': forms.CheckboxSelectMultiple, }
+
+

@@ -6,12 +6,27 @@
     font-weight: bold;
 }
 
-#search-bar {
-    margin-bottom: 12px;
+.panel-title {
+    font-weight: bold !important;
 }
 
 .move {
     margin-top: 5px;
 
+}
+
+.jumbotron {
+    background-color: #428bca !important;
+
+}
+
+.jumbotron h1 {
+    margin: 8px;
+    font-size: 40px;
+    color: white;
+}
+
+img {
+    border-radius: 8px;
 }
 
