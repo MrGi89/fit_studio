@@ -22,11 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '1^@nu9=3#*g^(bigpnbt0aoru$o3b$1t=zu4$aciy&0y&na!o)'
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -75,26 +75,26 @@ WSGI_APPLICATION = 'inspiral.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'NAME': 'inspiral',
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'USER': 'postgres',
-#         'PASSWORD': 'coderslab',
-#         'HOST': '127.0.0.1'
-#     },
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'inspiral',
-        'USER': 'MrGi89',
-        'PASSWORD': 'MyFirstApp199',
-        'HOST': 'MrGi89-717.postgres.pythonanywhere-services.com',
-        'PORT': '10717',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'USER': 'postgres',
+        'PASSWORD': 'coderslab',
+        'HOST': '127.0.0.1'
+    },
 }
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'inspiral',
+#         'USER': 'MrGi89',
+#         'PASSWORD': 'MyFirstApp199',
+#         'HOST': 'MrGi89-717.postgres.pythonanywhere-services.com',
+#         'PORT': '10717',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -133,7 +133,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = '/login/'
 
