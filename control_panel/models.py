@@ -1,5 +1,4 @@
 from datetime import date
-
 from django.db import models
 
 TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nie  aktywny'))
@@ -48,7 +47,7 @@ class Pass(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='passes', verbose_name='Użytkownik')
     product = models.ForeignKey(Product, on_delete=None, verbose_name='Karnet')
     status = models.SmallIntegerField(choices=TYPE_OF_PAYMENT, default=2, verbose_name='Status')
-    start_date = models.DateField(default=date.today(), verbose_name='Data rozpoczęcia')
+    start_date = models.DateField(default=date.today, verbose_name='Data rozpoczęcia')
     end_date = models.DateField(verbose_name='Data zakończenia')
     entries = models.SmallIntegerField(default=0)
 
@@ -65,5 +64,3 @@ class Group(models.Model):
 class Entry(models.Model):
     current_pass = models.ForeignKey(Pass, on_delete=models.CASCADE)
     date = models.DateField()
-
-

@@ -77,24 +77,15 @@ WSGI_APPLICATION = 'inspiral.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'inspiral',
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'USER': 'postgres',
-        'PASSWORD': 'coderslab',
-        'HOST': '127.0.0.1'
-    },
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pd_studio',
+        'USER': 'root',
+        'PASSWORD': 'Malami321',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
 }
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'inspiral',
-#         'USER': 'MrGi89',
-#         'PASSWORD': 'MyFirstApp199',
-#         'HOST': 'MrGi89-717.postgres.pythonanywhere-services.com',
-#         'PORT': '10717',
-#     }
-# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -133,7 +124,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
 LOGIN_URL = '/login/'
 
 EMAIL_HOST = 'smtp.da12.domeny.com'
