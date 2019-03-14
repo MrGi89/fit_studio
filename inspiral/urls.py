@@ -16,13 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
-from control_panel.views import HomeView, LoginView, LogoutView, EditUserView, ShowMembersView, ShowMemberView, \
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from . import settings
+from control_panel.views import HomeView, LoginView, LogoutView, EditUserView, MembersView, MemberView, \
     CreateMemberView, UpdateMemberView, DeleteMemberView, ShowTrainersView, CreateTrainerView, \
     UpdateTrainerView, DeleteTrainerView, ShowProductsView, CreateProductView, UpdateProductView, DeleteProductView, \
     CreatePassView, DeletePassView, UpdatePassView, UpdatePassStatusView, AddPassEntryView, DeletePassEntryView, \
     ShowScheduleView, ShowGroupsView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, \
     DeleteGroupView, UpdateGroupView, ShowPaymentsView, LoginAsAnonymous
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,24 +34,24 @@ urlpatterns = [
     url(r'^edit_user/(?P<user_id>\d+)/$', EditUserView.as_view(), name='edit_user'),
     url(r'^tester_login/$', LoginAsAnonymous.as_view(), name='tester_login'),
 
-    url(r'^show_members/$', ShowMembersView.as_view(), name='show_members'),
-    url(r'^show_member/(?P<pk>\d+)/$', ShowMemberView.as_view(), name='show_member'),
+    url(r'^members/$', MembersView.as_view(), name='members'),
+    url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
     url(r'^member/create/$', CreateMemberView.as_view(), name='create_member'),
     url(r'^member/update/(?P<pk>\d+)/$', UpdateMemberView.as_view(), name='update_member'),
     url(r'^member/delete/(?P<pk>\d+)/$', DeleteMemberView.as_view(), name='delete_member'),
 
 
-    url(r'^show_trainers/$', ShowTrainersView.as_view(), name='show_trainers'),
+    url(r'^trainers/$', ShowTrainersView.as_view(), name='trainers'),
     url(r'^trainer/create/$', CreateTrainerView.as_view(), name='create_trainer'),
     url(r'^trainer/update/(?P<pk>\d+)/$', UpdateTrainerView.as_view(), name='update_trainer'),
     url(r'^trainer/delete/(?P<pk>\d+)/$', DeleteTrainerView.as_view(), name='delete_trainer'),
 
-    url(r'^show_products/$', ShowProductsView.as_view(), name='show_products'),
+    url(r'^products/$', ShowProductsView.as_view(), name='products'),
     url(r'^product/create/$', CreateProductView.as_view(), name='create_product'),
     url(r'^product/update/(?P<pk>\d+)/$', UpdateProductView.as_view(), name='update_product'),
     url(r'^product/delete/(?P<pk>\d+)/$', DeleteProductView.as_view(), name='delete_product'),
 
-    url(r'^show_groups/$', ShowGroupsView.as_view(), name='show_groups'),
+    url(r'^groups/$', ShowGroupsView.as_view(), name='groups'),
     url(r'^group/create/$', CreateGroupView.as_view(), name='create_group'),
     url(r'^group/update/(?P<pk>\d+)/$', UpdateGroupView.as_view(), name='update_group'),
     url(r'^group/delete/(?P<pk>\d+)/$', DeleteGroupView.as_view(), name='delete_group'),
@@ -76,3 +78,5 @@ urlpatterns = [
 
 ]
 
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

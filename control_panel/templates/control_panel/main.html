@@ -4,68 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width = device-width, initial-scale = 1">
     <title>Home page</title>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href= "{% static "/stylesheet.css" %}">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="{% static "/app.js" %}"></script>
 </head>
 <body>
-
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a href="{% url 'home' %}" class="navbar-brand">inSpiral Pole Dance Studio</a>
+<div class="container-fluid">
+    <div class="row" id="first-row">
+        <div class="col-2 logo">
+            <a href="{% url 'home' %}" class="text-center">Studio Name</a>
         </div>
-
-        <div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if request.user and request.user.pk %}
-                    <li><a href="{% url 'edit_user' request.user.pk %}">{{ request.user.first_name | title}}</a></li>
-                {% endif %}
-                <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+        <div class="col nav-bar">
+            <p id="category">HOME</p>
+            <ul>
+                <li>
+                    <a href="#"><i class="fas fa-bell"></i></a>
+                </li>
+                <li>
+                    {% if request.user and request.user.pk %}
+                    <a href="{% url 'edit_user' request.user.pk %}"><i class="fa fa-cogs" aria-hidden="true"></i></a>
+                    {% endif %}
+                </li>
+                <li>
+                   <a href="{% url 'logout' %}"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                </li>
             </ul>
         </div>
     </div>
-</nav>
-
-<div class="row">
-    <div class="col-sm-2 col-md-2">
-        <ul class="nav nav-pills nav-stacked">
-
-            <li><a class="pretty" href="{% url 'show_members' %}">Użytkownicy</a></li>
-            <li><a class="pretty" href="{% url 'show_trainers' %}">Instruktorzy</a></li>
-            <li><a class="pretty" href="{% url 'show_products' %}">Produkty</a></li>
-            <li><a class="pretty" href="{% url 'show_groups' %}">Grupy</a></li>
-            <li><a class="pretty" href="{% url 'show_schedule' %}">Grafik</a></li>
-            <li><a class="pretty" href="{% url 'show_payments' %}">Finanse</a></li>
-            <li>
-                <a class="pretty dropdown_item" href="">Dodaj</a>
-                <ul class="nav nav-pills nav-stacked hidden" id="content">
-                    <li><a href="{% url 'create_member' %}">Nowy użytkownik</a></li>
-                    <li><a href="{% url 'create_trainer' %}">Nowy instruktor</a></li>
-                    <li><a href="{% url 'create_product' %}">Nowy produkt</a></li>
-                    <li><a href="{% url 'create_group' %}">Nowa grupa</a></li>
-                </ul>
-            </li>
-
-        </ul>
-    </div>
-
-    <div class="col-sm-10 col-md-10">
-        {% block content %}
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="text-center">Witaj w inSpiral</h1>
+    <div class="row" id="second-row">
+        <div class="col-2 side-bar">
+            <a href="{% url 'home' %}"><i class="fa fa-home"></i>Home</a>
+            <a href="{% url 'members' %}"><i class="fas fa-user"></i>Members</a>
+            <a href="{% url 'trainers' %}"><i class="fas fa-user-graduate"></i>Trainers</a>
+            <a href="{% url 'products' %}"><i class="fab fa-product-hunt"></i>Products</a>
+            <a href="{% url 'groups' %}"><i class="fa fa-users"></i>Groups</a>
+        </div>
+        <div class="col">
+            <div class="content">
+                {% block content %}
+                    <div class="window-container">
+                        <h5>Members</h5>
+                        <h5>Trainers</h5>
+                        <h5>Products</h5>
+                        <h5>Payments</h5>
+                        <div class="window">
+                            <h6>All members: {{ members | length }}</h6>
+                            <p>Active members: {{ members | length }}</p>
+                        </div>
+                        <div class="window">
+                            <h6>All trainers: {{ trainers | length }}</h6>
+                        </div>
+                        <div class="window">
+                            <h6>All products: {{ products | length }}</h6>
+                        </div>
+                        <div class="window">
+                            <h6>Payments</h6>
+                            Suma przychodu
+                            Suma nieopłaconych karnetów
+                        </div>
+                        <div class="window">
+                            nowy użytkownik
+                        </div>
+                        <div class="window">
+                            korespondencja seryjna
+                        </div>
+                        <div class="window">
+                            dodaj grupę
+                        </div>
+                        <div class="window">
+                            dodaj trenera
+                        </div>
                     </div>
-                </div>
+                {% endblock %}
             </div>
-        {% endblock %}
+        </div>
+    </div>
+    <div class="row" id="third-row">
+        <div class="col-2 side-bar"></div>
+        <div class="col" id="footer"></div>
     </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{% static "/app.js" %}"></script>
 </body>
 </html>

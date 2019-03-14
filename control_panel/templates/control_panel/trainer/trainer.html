@@ -1,0 +1,17 @@
+{% extends 'control_panel/main.html' %}
+{% block content %}
+    <div class="window-container">
+        <div class="window add-trainer">
+            <a href="#"><i class="fa fa-user-plus" aria-hidden="true"></i></a>
+        </div>
+        {% for trainer in trainers %}
+            <div class="window">
+                <h5>{{ trainer.first_name }} {{ trainer.last_name }}</h5>
+                <p>e-mail: {{ trainer.mail }}</p>
+                <p>tel: {{ trainer.phone }}</p>
+                <a href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

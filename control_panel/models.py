@@ -1,19 +1,23 @@
 from datetime import date
 from django.db import models
 
-TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nie  aktywny'))
+TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
+GENDER = ((1, 'Kobieta'), (2, 'Mężczyzna'))
 TYPE_OF_LEVEL = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
 TYPE_OF_PAYMENT = ((1, 'Opłacony'), (2, 'Do zapłaty'))
 TYPE_OF_ACTIVITY = ((1, 'Jumping'), (2, 'Pole Dance'), (3, 'Stretching'))
 
 
 class Member(models.Model):
-    first_name = models.CharField(max_length=64, verbose_name='Imię')
-    last_name = models.CharField(max_length=64, verbose_name='Nazwisko')
-    phone = models.IntegerField(verbose_name='Numer tel.')
-    mail = models.EmailField(unique=True, verbose_name='E-mail')
-    status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=2, verbose_name='Status')
-    description = models.TextField(null=True, verbose_name='Notatka')
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
+    birth_date = models.DateField(null=True)
+    gender = models.SmallIntegerField(choices=GENDER, default=1)
+    phone = models.IntegerField()
+    mail = models.EmailField(unique=True)
+    status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=2)
+    notes = models.TextField(null=True)
+    img = models.ImageField(upload_to='user_img/', default='user_img/default.jpg')
 
     def __str__(self):
         self.name = self.first_name + ' ' + self.last_name
