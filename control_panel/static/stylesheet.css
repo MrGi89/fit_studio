@@ -3,6 +3,33 @@ html, body, .container-fluid {
     background-color: #dedcd5;
 }
 
+a {
+    text-decoration: none;
+    color: #888888;
+}
+
+i {
+    font-size: 150%;
+}
+
+i:hover {
+    color: #393873;
+}
+
+h4 {
+    margin: 0;
+    padding: 0;
+}
+
+.my-btn {
+    background-color: #393873;
+    border-color: #393873;
+}
+.my-btn:hover {
+    background-color: #272573;
+    border-color: #272573;
+}
+
 #first-row {
     height: 10%;
 }
@@ -71,14 +98,6 @@ html, body, .container-fluid {
     display: inline-block;
     margin-left: 20px;
 }
-.nav-bar a {
-    text-decoration: none;
-    color: #888888;
-}
-.nav-bar i {
-    font-size: 150%;
-}
-
 
 /*CONTENT*/
 
@@ -92,71 +111,33 @@ html, body, .container-fluid {
     box-shadow: 4px 4px 10px #888888;
     padding: 20px;
 }
-.window table a {
-    text-decoration: none;
-    color: #000000;
-}
+
 .window table i {
     font-size: 120%;
 }
 
-.headings {
-    float: left;
-    margin-bottom: 15px
-}
+/*SEARCH BAR*/
 
 .search-bar {
-    float: right;
-    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.search-bar a {
-    text-decoration: none;
-    color: #000000;
+
+.search-bar > a {
+    height: 50%;
+    margin-right: 10px;
 }
+
+.search-bar > label {
+    height: 50%;
+}
+
 .search-bar i {
-    font-size: 150%;
-}
-/*MEMBER CARD*/
-.member{
     height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-#first-col {
-    width: 30%;
-}
-#second-col {
-    width: 68%
-}
-.member > div {
-    display: flex;
-    flex-direction: column;
-}
-.member .window {
-    margin-bottom: 15px;
 }
 
-.heading {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*TRAINERS CARD*/
+/*WINDOW CONTAINER*/
 
 .window-container {
     display: flex;
@@ -171,17 +152,91 @@ html, body, .container-fluid {
     margin: 10px;
     width: 23%;
 }
-.add-trainer {
+
+
+/*PROFILE CARD*/
+
+.profile{
+    height: 100%;
+    width: 100%;
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.first-col {
+    width: 30%;
+}
+.second-col {
+    width: 68%
+}
+.profile > div {
+    display: flex;
+    flex-direction: column;
+}
+.profile .window {
+    margin-bottom: 15px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
-.add-trainer a {
-    text-decoration: none;
+.profile-info > div {
+    width: 100%;
+    margin: 10px 0 10px 0;
 }
-.add-trainer i {
-    font-size: 400%;
+
+.profile-info img {
+    margin-bottom: 30px;
+    border-radius: 50%;
 }
+
+.profile-boxes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.profile-boxes > div {
+    width: 50%;
+}
+
+.profile-boxes small {
+    display: block;
+    width: 100%;
+}
+
+.group-count {
+    background-color: #393873;
+    width: 40px
+}
+
+
+
+
+
+
+.heading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+#map {
+    height: 100%;
+}
+
+
+
+
+
+
+
+
+
 
 
 

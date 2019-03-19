@@ -1,0 +1,245 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}MEMBER{% endblock %}
+{% block content %}
+    <div class="profile">
+        <div class="first-col">
+            <div class="window">
+                <div class="profile-info">
+                    <div>
+                        <img src="{{ member.img.url }}" alt="..." width="110" height="110">
+                        <h4>{{ member }}</h4>
+                    </div>
+                    <div class="profile-boxes">
+                        <div>
+                            <small>Passes</small>
+                            <h6>{{ member.passes.all.count }}</h6>
+                        </div>
+                        <div>
+                            <small>Entries</small>
+                            <h6>{{ entries }}</h6>
+                        </div>
+                        <div>
+                            <small>Spent</small>
+                            <h6>4957 zł</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="window">
+                <div class="profile-info">
+                    <div class="profile-boxes">
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#send-to-member"><i
+                                class="fas fa-envelope"></i></a>
+                            <small>Message</small>
+                        </div>
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#message-history"><i
+                                class="fas fa-mail-bulk"></i></a>
+                            <small>History</small>
+                        </div>
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#delete-member"><i class="fas fa-trash-alt"></i></a>
+                            <small>Delete</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="window">
+                <div class="heading">
+                    <h4>Groups</h4>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">modify assigment</button>
+                </div>
+                <ul class="list-group">
+                    {% for group in member.group_set.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ group }}
+                            <span class="badge badge-primary badge-pill group-count">{{ group.members.count }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="second-col">
+            <div class="window profile-details">
+                <div class="heading">
+                    <h4>Profile</h4>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="update-member">save changes
+                    </button>
+                </div>
+                <form>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="mfn" class="col-form-label-sm">First Name</label>
+                            <input type="text" class="form-control" id="mfn" value={{ member.first_name }}>
+                        </div>
+                        <div class="col">
+                            <label for="mln" class="col-form-label-sm">Last Name</label>
+                            <input type="text" class="form-control" id="mln" value={{ member.last_name }}>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="gender" class="col-form-label-sm">Gender</label>
+                            <select class="custom-select mr-sm-2" id="gender">
+                                <option value="1" {% if member.gender == 1 %}selected{% endif %}>Kobieta</option>
+                                <option value="2" {% if member.gender == 2 %}selected{% endif %}>Mężczyzna</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="bday" class="col-form-label-sm">Birth Day</label>
+                            <input type="date" class="form-control" id="bday"
+                                   value="{{ member.birth_date | date:"Y-m-d" }}">
+                        </div>
+                        <div class="col">
+                            <label for="sts" class="col-form-label-sm">Status</label>
+                            <select class="custom-select mr-sm-2" id="sts">
+                                <option value="1" {% if member.status == 1 %}selected{% endif %}>Aktywny</option>
+                                <option value="2" {% if member.status == 2 %}selected{% endif %}>Nieaktywny</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="mail" class="col-form-label-sm">E-mail</label>
+                            <input type="text" class="form-control" id="mail" value={{ member.mail }}>
+                        </div>
+                        <div class="col">
+                            <label for="phone" class="col-form-label-sm">Phone number</label>
+                            <input type="text" class="form-control" id="phone" value={{ member.phone }}>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="dsc" class="col-form-label-sm">Notes</label>
+                            <textarea class="form-control" id="dsc" rows="4" cols="50">{% if member.notes %}
+                                {{ member.notes }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="window profile-payments">
+                <div class="heading">
+                    <h4>Passes</h4>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">add pass</button>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Entries</th>
+                        <th scope="col">Paid</th>
+                        <th scope="col" colspan="2">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for pass in member.passes.all %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter0 | add:1 }}</th>
+                            <td>{{ pass.product }}</td>
+                            <td>{{ pass.start_date | date:"Y-m-d" }}</td>
+                            <td>{{ pass.end_date | date:"Y-m-d" }}</td>
+                            <td>{{ pass.entries.all.count }}/{{ pass.product.available_entries }}</td>
+                            <td>{% if pass.paid %}Opłacony{% else %}Nieopłacony{% endif %}</td>
+                            <td><a href="#"><i class="fa fa-info-circle"></i></a></td>
+                            <td><a href="#"><i class="fas fa-trash-alt"></i></a></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <th scope="row" colspan="7">No passes bought</th>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {#DELETE MEMBER MODAL#}
+    <div class="modal fade" id="delete-member" tabindex="-1" role="dialog" aria-labelledby="delete-member-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-member-label">Delete member?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this member?
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="" class="btn btn-primary my-btn">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#SEND EMAIL TO MEMBER MODAL#}
+    <div class="modal fade" id="send-to-member" tabindex="-1" role="dialog" aria-labelledby="send-to-member-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="send-to-member-label">New message to {{ member }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name" value="{{ member.mail }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-title" class="col-form-label">Title:</label>
+                            <input type="text" class="form-control" id="message-title" placeholder="Title...">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text" rows="10"
+                                      placeholder="Message..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="" class="btn btn-primary my-btn">Send message</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#MAIL HISTORY MODAL#}
+    <div class="modal fade" id="message-history" tabindex="-1" role="dialog" aria-labelledby="message-history-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="message-history-label">Messages history</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Tytuł maila</h5>
+                    <p>data wysyłki</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque aut consectetur ea impedit
+                        necessitatibus qui rem rerum suscipit tenetur vero?</p>
+                    <hr>
+                    <h5>Tytuł maila</h5>
+                    <p>data wysyłki</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque aut consectetur ea impedit
+                        necessitatibus qui rem rerum suscipit tenetur vero?</p>
+                    <hr>
+                </div>
+                <div class="modal-footer">
+                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

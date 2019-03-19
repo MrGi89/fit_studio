@@ -1,11 +1,12 @@
 {% extends 'control_panel/main.html' %}
+{% block site_name %}TRAINERS{% endblock %}
 {% block content %}
     <div class="window">
         <div class="headings">
-            <h3>Members Table</h3>
-            <small>Shows all members</small>
+            <h3>Trainers Table</h3>
+            <small>Shows all trainers</small>
         </div>
-        <div class="search-bar search-member">
+        <div class="search-bar">
             <a href="#"><i class="fa fa-search" aria-hidden="true"></i></a>
             <label>
                 <input class="form-control" type="text" placeholder="search..."/>
@@ -15,8 +16,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Number</th>
                     <th scope="col">E-mail</th>
                     <th scope="col">Status</th>
@@ -24,15 +24,14 @@
                 </tr>
             </thead>
             <tbody class="members">
-            {% for member in members %}
+            {% for trainer in trainers %}
                 <tr>
                     <th scope="row">{{ forloop.counter0 | add:1 }}</th>
-                    <td>{{ member.first_name }}</td>
-                    <td>{{ member.last_name }}</td>
-                    <td>{{ member.phone }}</td>
-                    <td>{{ member.mail }}</td>
-                    <td>{{ member.get_status_display }}</td>
-                    <td><a href="{% url 'member' member.id %}"><i class="fa fa-info-circle"></i></a></td>
+                    <td>{{ trainer }}</td>
+                    <td>{{ trainer.phone }}</td>
+                    <td>{{ trainer.mail }}</td>
+                    <td>{{ trainer.get_status_display }}</td>
+                    <td><a href="{% url 'trainer' trainer.id %}"><i class="fa fa-info-circle"></i></a></td>
                     <td><a href="#"><i class="fas fa-trash-alt"></i></a></td>
                 </tr>
             {% endfor %}

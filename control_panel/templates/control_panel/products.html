@@ -1,0 +1,39 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}PRODUCTS{% endblock %}
+{% block content %}
+<div class="window" id="products">
+        <div class="heading">
+            <div>
+                <h3>Members Table</h3>
+                <small>Shows all members</small>
+            </div>
+        </div>
+
+    <div class="row">
+        <div class="col-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-new-tab" data-toggle="pill" href="#v-pills-new" role="tab" aria-controls="v-pills-new" aria-selected="true">Add new product</a>
+                {% for product in products %}
+                    <a class="nav-link" id="v-pills-{{ product.id }}-tab" data-toggle="pill" href="#v-pills-{{ product.id }}" role="tab" aria-controls="v-pills-{{ product.id }}" aria-selected="true">{{ product }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-new" role="tabpanel" aria-labelledby="v-pills-new-tab">
+                </div>
+                {% for product in products %}
+                    <div class="tab-pane fade" id="v-pills-{{ product.id }}" role="tabpanel" aria-labelledby="v-pills-{{ product.id }}-tab">
+
+
+
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

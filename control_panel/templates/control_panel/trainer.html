@@ -1,10 +1,11 @@
 {% extends 'control_panel/main.html' %}
+{% block site_name %}MEMBER{% endblock %}
 {% block content %}
     <div class="member">
         <div id="first-col">
                 <div class="window profile-info">
-                    <img src="{{ member.img.url }}" alt="..." width="100" height="100" style="border-radius: 50%;">
-                    <h5>{{ member.first_name | capfirst }} {{ member.last_name | capfirst }}</h5>
+                    <img src="{{ trainer.img.url }}" alt="..." width="100" height="100">
+                    <h5>{{ member }}</h5>
                     <div>
                         ilość zakupionych karnetów
                         ilość odbytych wejść
@@ -36,47 +37,62 @@
                         <div class="form-row">
                             <div class="col">
                                 <label for="mfn" class="col-form-label-sm">First Name</label>
-                                <input type="text" class="form-control" id="mfn" value={{ member.first_name }}>
+                                <input type="text" class="form-control" id="mfn" value={{ trainer.first_name }}>
                             </div>
                             <div class="col">
                                 <label for="mln" class="col-form-label-sm">Last Name</label>
-                                <input type="text" class="form-control" id="mln" value={{ member.last_name }}>
+                                <input type="text" class="form-control" id="mln" value={{ trainer.last_name }}>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col">
                                 <label for="gender" class="col-form-label-sm">Gender</label>
                                 <select class="custom-select mr-sm-2" id="gender">
-                                    <option value="1" {% if member.gender == 1 %}selected{% endif %}>Kobieta</option>
-                                    <option value="2" {% if member.gender == 2 %}selected{% endif %}>Mężczyzna</option>
+                                    <option value="1" {% if trainer.gender == 1 %}selected{% endif %}>Kobieta</option>
+                                    <option value="2" {% if trainer.gender == 2 %}selected{% endif %}>Mężczyzna</option>
                                 </select>
                             </div>
                             <div class="col">
                                 <label for="bday" class="col-form-label-sm">Birth Day</label>
-                                <input type="date" class="form-control" id="bday" value="{{ member.birth_date | date:"Y-m-d" }}">
+                                <input type="date" class="form-control" id="bday" value="{{ trainer.birth_date | date:"Y-m-d" }}">
                             </div>
                             <div class="col">
                                 <label for="sts" class="col-form-label-sm">Status</label>
                                 <select class="custom-select mr-sm-2" id="sts">
-                                    <option value="1" {% if member.status == 1 %}selected{% endif %}>Aktywny</option>
-                                    <option value="2" {% if member.status == 2 %}selected{% endif %}>Nieaktywny</option>
+                                    <option value="1" {% if trainer.status == 1 %}selected{% endif %}>Aktywny</option>
+                                    <option value="2" {% if trainer.status == 2 %}selected{% endif %}>Nieaktywny</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col">
                                 <label for="mail" class="col-form-label-sm">E-mail</label>
-                                <input type="text" class="form-control" id="mail" value={{ member.mail }}>
+                                <input type="text" class="form-control" id="mail" value={{ trainer.mail }}>
                             </div>
                             <div class="col">
                                 <label for="phone" class="col-form-label-sm">Phone number</label>
-                                <input type="text" class="form-control" id="phone" value={{ member.phone }}>
+                                <input type="text" class="form-control" id="phone" value={{ trainer.phone }}>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="et" class="col-form-label-sm">Employment type</label>
+                                <select class="custom-select mr-sm-2" id="et">
+                                    <option value="1" {% if trainer.employment_type == 1 %}selected{% endif %}>Umowa o pracę</option>
+                                    <option value="2" {% if trainer.employment_type == 2 %}selected{% endif %}>Umowa o zlecenie</option>
+                                    <option value="1" {% if trainer.employment_type == 3 %}selected{% endif %}>Umowa o dzieło</option>
+                                    <option value="1" {% if trainer.employment_type == 4 %}selected{% endif %}>Własna działalność</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="hr" class="col-form-label-sm">Hourly rate</label>
+                                <input type="text" class="form-control" id="hr" value={% if trainer.hourly_rate %}{{ trainer.hourly_rate }}{% endif %}>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col">
                                 <label for="dsc" class="col-form-label-sm">Notes</label>
-                                <textarea class="form-control" id="dsc" rows="4" cols="50">{{ member.notes }}</textarea>
+                                <textarea class="form-control" id="dsc" rows="4" cols="50">{% if trainer.notes %}{{ trainer.notes }}{% endif %}</textarea>
                             </div>
                         </div>
                     </form>

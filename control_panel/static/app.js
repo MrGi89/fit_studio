@@ -9,7 +9,4 @@ $(function () {
     updMemBtn.hide();
     $('.profile-details').find('input, select, textarea').change(UpdateMember)
 
-
-
-
 });

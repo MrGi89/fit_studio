@@ -9,6 +9,8 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
 
+
+
 from .models import Member, Group, Trainer, Pass, Product, Entry
 from .forms import LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, UpdatePassForm, GroupForm, \
     GroupAddMembersForm
@@ -53,26 +55,26 @@ class LoginAsAnonymous(View):
         return HttpResponseRedirect(reverse('home'))
 
 
-class EditUserView(LoginRequiredMixin, View):
+class UserView(LoginRequiredMixin, View):
 
     def get(self, request, user_id):
         user = User.objects.get(pk=user_id)
         form = EditUserForm(instance=user)
-        return render(request, template_name='control_panel/edit_user.html', context={'form': form})
+        return render(request, template_name='control_panel/user.html', context={'form': form})
 
     def post(self, request, user_id):
         user = User.objects.get(pk=user_id)
         form = EditUserForm(request.POST, instance=user)
         if user.username == 'tester':
             form.add_error('first_name', 'Tester nie może zmienić użytkownika')
-            return render(request, template_name='control_panel/edit_user.html', context={'form': form})
+            return render(request, template_name='control_panel/user.html', context={'form': form})
 
         if form.is_valid():
             user = form.save()
             login(request, user)
             return HttpResponseRedirect(reverse('home'))
 
-        return render(request, template_name='control_panel/edit_user.html', context={'form': form})
+        return render(request, template_name='control_panel/user.html', context={'form': form})
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -95,10 +97,11 @@ class MemberView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         member = get_object_or_404(Member, pk=pk)
-        passes = member.passes.all().order_by('-end_date')
+        entries = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
         return render(request,
-                      template_name='control_panel/member/member.html',
-                      context={'member': member, 'passes': passes})
+                      template_name='control_panel/member.html',
+                      context={'member': member,
+                               'entries': entries})
 
 
 class MembersView(LoginRequiredMixin, View):
@@ -106,7 +109,71 @@ class MembersView(LoginRequiredMixin, View):
     def get(self, request):
 
         members = Member.objects.all().order_by('last_name')
-        return render(request, template_name='control_panel/member/members.html', context={'members': members})
+        return render(request,
+                      template_name='control_panel/members.html',
+                      context={'members': members})
+
+
+class MapView(LoginRequiredMixin, View):
+
+    def get(self, request):
+
+        return render(request,
+                      template_name='control_panel/map.html')
+
+
+class ProductsView(LoginRequiredMixin, View):
+
+    def get(self, request):
+
+        products = Product.objects.all().order_by('-price')
+        return render(request,
+                      template_name='control_panel/products.html',
+                      context={'products': products})
+
+
+class TrainerView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+
+        trainer = get_object_or_404(Trainer, pk=pk)
+        return render(request,
+                      template_name='control_panel/trainer.html',
+                      context={'trainer': trainer})
+
+
+class TrainersView(LoginRequiredMixin, View):
+
+    def get(self, request):
+
+        trainers = Trainer.objects.all().order_by('last_name')
+        return render(request,
+                      template_name='control_panel/trainers.html',
+                      context={'trainers': trainers})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class CreateMemberView(LoginRequiredMixin, CreateView):
@@ -115,44 +182,13 @@ class CreateMemberView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('show_members')
 
 
-class UpdateMemberView(LoginRequiredMixin, UpdateView):
-    form_class = MemberForm
-    template_name = './control_panel/member/templates/control_panel/old/member_update_form.html'
-    model = Member
 
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        self.member_id = instance.id
-        instance.save()
-
-        return redirect(self.get_success_url(member_id=self.member_id))
-
-    def get_success_url(self, **kwargs):
-        member = Member.objects.get(pk=self.kwargs.get('pk'))
-        if kwargs is not None:
-            return reverse_lazy('show_member', kwargs={'pk': member.id})
 
 
 class DeleteMemberView(LoginRequiredMixin, DeleteView):
     model = Member
     template_name = './control_panel/member/templates/control_panel/old/member_confirm_delete.html'
     success_url = reverse_lazy('show_members')
-
-
-class ShowTrainersView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        search = request.GET.get('search')
-        trainers = Trainer.objects.all().order_by('last_name')
-
-        if search:
-            trainers = Trainer.objects.filter(Q(first_name__icontains=search) |
-                                              Q(last_name__icontains=search) |
-                                              Q(mail__icontains=search) |
-                                              Q(phone__icontains=search)).order_by('first_name')
-
-        return render(request, template_name='control_panel/trainer/templates/control_panel/old/show_trainers.html', context={'trainers': trainers,
-                                                                                                  'search': search})
 
 
 class CreateTrainerView(LoginRequiredMixin, CreateView):
@@ -174,36 +210,23 @@ class DeleteTrainerView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('show_trainers')
 
 
-class ShowProductsView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        search = request.GET.get('search')
-        products = Product.objects.all().order_by('-price')
-
-        if search:
-            products = Product.objects.filter(Q(name__icontains=search) |
-                                              Q(activity__icontains=search)).order_by('price')
-
-        return render(request, template_name='control_panel/product/show_products.html', context={'products': products,
-                                                                                                  'search': search})
-
 
 class CreateProductView(LoginRequiredMixin, CreateView):
     form_class = ProductForm
-    template_name = './control_panel/product/product_form.html'
+    template_name = './control_panel/product/templates/control_panel/old/product_form.html'
     success_url = reverse_lazy('show_products')
 
 
 class UpdateProductView(LoginRequiredMixin, UpdateView):
     form_class = ProductForm
-    template_name = './control_panel/product/product_update_form.html'
+    template_name = './control_panel/product/templates/control_panel/old/product_update_form.html'
     model = Product
     success_url = reverse_lazy('show_products')
 
 
 class DeleteProductView(LoginRequiredMixin, DeleteView):
     model = Product
-    template_name = './control_panel/product/product_confirm_delete.html'
+    template_name = './control_panel/product/templates/control_panel/old/product_confirm_delete.html'
     success_url = reverse_lazy('show_products')
 
 
@@ -226,12 +249,12 @@ class CreatePassView(LoginRequiredMixin, CreateView):
         return '/show_member/{}/'.format(self.member_id)
 
     form_class = PassForm
-    template_name = './control_panel/pass/pass_form.html'
+    template_name = './control_panel/old/pass/pass_form.html'
 
 
 class UpdatePassView(LoginRequiredMixin, UpdateView):
     form_class = UpdatePassForm
-    template_name = './control_panel/pass/pass_update_form.html'
+    template_name = './control_panel/old/pass/pass_update_form.html'
     model = Pass
 
     def form_valid(self, form):
@@ -260,7 +283,7 @@ class DeletePassView(LoginRequiredMixin, View):
         if entries:
             message.append('karnet został częściowo wykorzystany')
 
-        return render(request, template_name='control_panel/pass/pass_confirm_delete.html',
+        return render(request, template_name='control_panel/old/pass/pass_confirm_delete.html',
                       context={'message': message})
 
     def post(self, request, pk):
@@ -339,7 +362,7 @@ class ShowGroupsView(LoginRequiredMixin, View):
             groups = Group.objects.filter(Q(name__icontains=search) |
                                           Q(trainer__last_name__icontains=search)).order_by('name')
 
-        return render(request, template_name='control_panel/group/show_groups.html', context={'groups': groups,
+        return render(request, template_name='control_panel/old/group/show_groups.html', context={'groups': groups,
                                                                                               'search': search})
 
 
@@ -368,7 +391,7 @@ class AddGroupMembersView(LoginRequiredMixin, View):
     def get(self, request, group_id):
         group = get_object_or_404(Group, id=group_id)
         form = GroupAddMembersForm(instance=group)
-        return render(request, template_name='control_panel/group/add_members_form.html', context={'form': form})
+        return render(request, template_name='control_panel/old/group/add_members_form.html', context={'form': form})
 
     def post(self, request, group_id):
         group = get_object_or_404(Group, id=group_id)
@@ -376,25 +399,25 @@ class AddGroupMembersView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             return redirect('show_groups')
-        return render(request, template_name='control_panel/group/add_members_form.html', context={'form': form})
+        return render(request, template_name='control_panel/old/group/add_members_form.html', context={'form': form})
 
 
 class CreateGroupView(LoginRequiredMixin, CreateView):
     form_class = GroupForm
-    template_name = './control_panel/group/group_form.html'
+    template_name = './control_panel/old/group/group_form.html'
     success_url = reverse_lazy('show_groups')
 
 
 class UpdateGroupView(LoginRequiredMixin, UpdateView):
     form_class = GroupForm
-    template_name = './control_panel/group/group_update_form.html'
+    template_name = './control_panel/old/group/group_update_form.html'
     model = Group
     success_url = reverse_lazy('show_groups')
 
 
 class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = Group
-    template_name = './control_panel/group/group_confirm_delete.html'
+    template_name = './control_panel/old/group/group_confirm_delete.html'
     success_url = reverse_lazy('show_groups')
 
 
@@ -427,7 +450,7 @@ class ShowPaymentsView(LoginRequiredMixin, View):
         if search:
             passes = passes.filter(Q(member__first_name__icontains=search) | Q(member__last_name__icontains=search))
 
-        return render(request, template_name='control_panel/finances/show_payments.html',
+        return render(request, template_name='control_panel/old/finances/show_payments.html',
                       context={'passes': passes,
                                'search': search,
                                'start_time': start_time,
