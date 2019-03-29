@@ -21,10 +21,15 @@ h4 {
     padding: 0;
 }
 
+button:focus {
+    outline: 0;
+}
+
 .my-btn {
     background-color: #393873;
     border-color: #393873;
 }
+
 .my-btn:hover {
     background-color: #272573;
     border-color: #272573;
@@ -33,13 +38,16 @@ h4 {
 #first-row {
     height: 10%;
 }
-#second-row{
+
+#second-row {
     min-height: 90%;
 }
-#third-row{
+
+#third-row {
     height: 10%;
 
 }
+
 /* LOGO*/
 
 .logo {
@@ -51,6 +59,7 @@ h4 {
     justify-content: center;
     align-items: center;
 }
+
 .logo a {
     color: #E0E2ED;
     text-decoration: none;
@@ -63,19 +72,28 @@ h4 {
     display: flex;
     flex-direction: column;
 }
+
 .side-bar a {
     display: block;
     margin: 20px;
     color: #E0E2ED;
     text-justify: auto;
 }
+
 .side-bar a:hover {
-    color: #ffffff
+    color: #ffffff;
+    text-decoration: none;
 }
+
 .side-bar i {
     margin-right: 10px;
     font-size: 125%;
 }
+
+.side-bar i:hover {
+    color: #ffffff;
+}
+
 .side-bar a:first-child {
     margin-top: 40px;
 }
@@ -90,10 +108,12 @@ h4 {
     justify-content: space-between;
     align-items: center;
 }
+
 .nav-bar p {
     color: #888888;
     text-transform: uppercase;
 }
+
 .nav-bar li {
     display: inline-block;
     margin-left: 20px;
@@ -105,6 +125,7 @@ h4 {
     padding: 20px;
     height: 100%;
 }
+
 .window {
     background-color: #F3F4F4;
     border-radius: 5px;
@@ -144,10 +165,12 @@ h4 {
     flex-direction: row;
     flex-wrap: wrap;
 }
+
 .window-container div {
     margin: 10px;
     width: 23%;
 }
+
 .window-container > h5 {
     margin: 10px;
     width: 23%;
@@ -156,23 +179,27 @@ h4 {
 
 /*PROFILE CARD*/
 
-.profile{
+.profile {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
+
 .first-col {
     width: 30%;
 }
+
 .second-col {
     width: 68%
 }
+
 .profile > div {
     display: flex;
     flex-direction: column;
 }
+
 .profile .window {
     margin-bottom: 15px;
 }
@@ -184,6 +211,7 @@ h4 {
     align-items: center;
     text-align: center;
 }
+
 .profile-info > div {
     width: 100%;
     margin: 10px 0 10px 0;
@@ -199,6 +227,7 @@ h4 {
     flex-direction: row;
     justify-content: space-evenly;
 }
+
 .profile-boxes > div {
     width: 50%;
 }
@@ -207,16 +236,34 @@ h4 {
     display: block;
     width: 100%;
 }
-
-.group-count {
-    background-color: #393873;
-    width: 40px
+.profile-list a {
+    color: #000000;
+}
+.profile-list i {
+    color: #888888;
+    margin-right: 10px;
+    font-size: 20px;
+}
+.profile-list a:hover {
+    text-decoration: none;
+    color: #272573;
 }
 
 
 
 
 
+.group-count {
+    background-color: #393873;
+    width: 40px
+}
+
+.search-btn {
+    background-color: #F3F4F4;
+    color: #888888;
+    border: none;
+    cursor: pointer;
+}
 
 .heading {
     display: flex;
@@ -229,7 +276,11 @@ h4 {
     height: 100%;
 }
 
-
+.group-color {
+    padding: 10px;
+    border: 1px solid;
+    border-radius: 5px
+}
 
 
 

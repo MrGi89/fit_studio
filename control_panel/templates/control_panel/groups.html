@@ -1,11 +1,11 @@
 {% extends 'control_panel/main.html' %}
-{% block site_name %}PRODUCTS{% endblock %}
+{% block site_name %}GROUPS{% endblock %}
 {% block content %}
     <div class="window">
         <div class="heading">
             <div>
-                <h3>Products Table</h3>
-                <small>Shows all products</small>
+                <h3>Groups Table</h3>
+                <small>Shows all groups</small>
             </div>
             <div class="search-bar">
                 <button type="submit" form="search-query" class="search-btn">
@@ -24,27 +24,29 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Validity</th>
-                <th scope="col">Available entries</th>
-                <th scope="col">Price</th>
+                <th scope="col">Color</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Activity</th>
+                <th scope="col">Trainer</th>
                 <th scope="col" colspan="2">Actions</th>
             </tr>
             </thead>
             <tbody>
-            {% for product in products %}
+            {% for group in groups %}
                 <tr>
                     <th scope="row">{{ forloop.counter0 | add:1 }}</th>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.validity }}</td>
-                    <td>{{ product.available_entries }}</td>
-                    <td>{{ product.price }}</td>
+                    <td>{{ group }}</td>
+                    <td><div class="group-color" style="background-color: {{ group.get_color_display }};"></div></td>
+                    <td>{{ group.max_capacity }}</td>
+                    <td>{{ group.activity.name }}</td>
+                    <td>{{ group.trainer }}</td>
                     <td>
-                        <a href="{% url 'product' product.pk %}">
+                        <a href="{% url 'group' group.id %}">
                             <i class="fa fa-info-circle"></i>
                         </a>
                     </td>
                     <td>
-                        <a href="#" data-toggle="modal" data-target="#delete-product-{{ product.id }}">
+                        <a href="#" data-toggle="modal" data-target="#delete-group-{{ group.id }}">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
@@ -53,23 +55,23 @@
             </tbody>
         </table>
     </div>
-    {% for product in products %}
-        <div class="modal fade" id="delete-product-{{ product.id }}" tabindex="-1" role="dialog"
-             aria-labelledby="delete-product-label" aria-hidden="true">
+    {% for group in groups %}
+        <div class="modal fade" id="delete-group-{{ group.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="delete-group-label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="delete-product-label">Delete product?</h5>
+                        <h5 class="modal-title" id="delete-group-label">Delete group?</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete product {{ product }}?
+                        Are you sure you want to delete group {{ group }}?
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                        <a href="{% url 'delete_product' product.id %}" class="btn btn-primary my-btn">Delete</a>
+                        <a href="{% url 'delete_group' group.pk %}" class="btn btn-primary my-btn">Delete</a>
                     </div>
                 </div>
             </div>

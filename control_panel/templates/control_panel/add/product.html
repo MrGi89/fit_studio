@@ -1,0 +1,35 @@
+{% extends 'control_panel/add/member.html' %}
+{% block add_form %}
+    <div class="heading">
+        <h4>Add Product</h4>
+        <button type="submit" form="product-add" class="btn btn-sm btn-outline-secondary">save changes</button>
+    </div>
+    <form id="product-add" method="POST" action="#">
+        {% csrf_token %}
+        {{ form.name.errors }}
+        {{ form.validity.errors }}
+        {{ form.available_entries.errors }}
+        {{ form.price.errors }}
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.name.id_for_label }}" class="col-form-label-sm">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.price.id_for_label }}" class="col-form-label-sm">Price</label>
+                {{ form.price }}
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.validity.id_for_label }}" class="col-form-label-sm">Validity</label>
+                {{ form.validity }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.available_entries.id_for_label }}" class="col-form-label-sm">Available entries</label>
+                {{ form.available_entries }}
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -7,12 +7,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
-
-
-from .models import Member, Group, Trainer, Pass, Product, Entry
-from .forms import LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, UpdatePassForm, GroupForm, \
+from .models import Activity, Entry, Group, Member, Pass, Product, Trainer
+from .forms import ActivityForm, LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, \
+    UpdatePassForm, GroupForm, \
     GroupAddMembersForm
 
 
@@ -20,7 +19,9 @@ class LoginView(View):
 
     def get(self, request):
         form = LoginForm()
-        return render(request, template_name='control_panel/login.html', context={'form': form})
+        return render(request,
+                      template_name='control_panel/login.html',
+                      context={'form': form})
 
     def post(self, request):
 
@@ -28,128 +29,381 @@ class LoginView(View):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user_search = User.objects.filter(email=email)
-            if user_search:
-                username = user_search[0].username
-                user = authenticate(username=username, password=password)
-                if user is not None:
-                    login(request, user)
-                    return HttpResponseRedirect(reverse('home'))
+            user = User.objects.get(email=email)
+            if user:
+                username = user.username
+                logged_user = authenticate(username=username, password=password)
+                if logged_user is not None:
+                    login(request, logged_user)
+                    return HttpResponseRedirect(reverse('members'))
 
-        form.add_error('email', 'Błędny adres email lub hasło. Spróbuj jeszcze raz')
-        return render(request, template_name='control_panel/login.html', context={'form': form})
+        form.add_error('email', 'E-mail address or password is incorrect. Try again.')
+        return render(request,
+                      template_name='control_panel/login.html',
+                      context={'form': form})
+
+
+class LoginAsAnonymous(View):
+
+    def get(self, request):
+        user = authenticate(username='anonymous', password='!Qazxsw2')
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse('members'))
+        return HttpResponseRedirect(reverse('login'))
 
 
 class LogoutView(View):
 
     def get(self, request):
         logout(request)
-        return redirect('/login')
-
-
-class LoginAsAnonymous(View):
-
-    def get(self, request):
-        user = authenticate(username='tester', password='!Qazxsw2')
-        login(request, user)
-        return HttpResponseRedirect(reverse('home'))
-
-
-class UserView(LoginRequiredMixin, View):
-
-    def get(self, request, user_id):
-        user = User.objects.get(pk=user_id)
-        form = EditUserForm(instance=user)
-        return render(request, template_name='control_panel/user.html', context={'form': form})
-
-    def post(self, request, user_id):
-        user = User.objects.get(pk=user_id)
-        form = EditUserForm(request.POST, instance=user)
-        if user.username == 'tester':
-            form.add_error('first_name', 'Tester nie może zmienić użytkownika')
-            return render(request, template_name='control_panel/user.html', context={'form': form})
-
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return HttpResponseRedirect(reverse('home'))
-
-        return render(request, template_name='control_panel/user.html', context={'form': form})
-
-
-class HomeView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        members = Member.objects.all().order_by('last_name')
-        trainers = Trainer.objects.all().order_by('last_name')
-        products = Product.objects.all()
-        groups = Group.objects.all()
-
-        return render(request,
-                      template_name='control_panel/main.html',
-                      context={'members': members,
-                               'trainers': trainers,
-                               'products': products,
-                               'groups': groups})
-
-
-class MemberView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-        member = get_object_or_404(Member, pk=pk)
-        entries = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
-        return render(request,
-                      template_name='control_panel/member.html',
-                      context={'member': member,
-                               'entries': entries})
+        return HttpResponseRedirect(reverse('login'))
 
 
 class MembersView(LoginRequiredMixin, View):
 
     def get(self, request):
 
-        members = Member.objects.all().order_by('last_name')
+        search_query = request.GET.get('search_query')
+        if search_query:
+            members = Member.objects.filter(Q(first_name__icontains=search_query) |
+                                            Q(last_name__icontains=search_query) |
+                                            Q(mail__icontains=search_query)).order_by('last_name')
+        else:
+            members = Member.objects.all().order_by('last_name')
         return render(request,
                       template_name='control_panel/members.html',
-                      context={'members': members})
+                      context={'members': members,
+                               'search_query': search_query})
 
 
-class MapView(LoginRequiredMixin, View):
+class MemberView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        member = get_object_or_404(Member, pk=pk)
+        form = MemberForm(instance=member)
+        entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
+        payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
+        return render(request,
+                      template_name='control_panel/member.html',
+                      context={'member': member,
+                               'member_form': form,
+                               'entries_count': entries_count,
+                               'payments_count': payment_count})
+
+    def post(self, request, pk):
+        member = get_object_or_404(Member, pk=pk)
+        form = MemberForm(instance=member, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('member', args=[member.pk]))
+
+        entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
+        payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
+        return render(request,
+                      template_name='control_panel/member.html',
+                      context={'member': member,
+                               'member_form': form,
+                               'entries_count': entries_count,
+                               'payments_count': payment_count})
+
+
+class CreateMemberView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = MemberForm()
+        return render(request,
+                      template_name='control_panel/add/member.html',
+                      context={'form': form})
+
+    def post(self, request):
+        form = MemberForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('members'))
+        return render(request,
+                      template_name='control_panel/add/member.html',
+                      context={'form': form})
+
+
+class DeleteMemberView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        member = get_object_or_404(Member, pk=pk)
+        member.delete()
+        return redirect('members')
+
+
+class TrainersView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        search_query = request.GET.get('search_query')
+        if search_query:
+            trainers = Trainer.objects.filter(Q(first_name__icontains=search_query) |
+                                              Q(last_name__icontains=search_query) |
+                                              Q(mail__icontains=search_query)).order_by('last_name')
+        else:
+            trainers = Trainer.objects.all().order_by('last_name')
+        return render(request,
+                      template_name='control_panel/trainers.html',
+                      context={'trainers': trainers,
+                               'search_query': search_query})
+
+
+class TrainerView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        trainer = get_object_or_404(Trainer, pk=pk)
+        form = TrainerForm(instance=trainer)
+        students = sum([group.members.all().count() for group in trainer.groups.all()])
+        week_classes = sum([group.days.all().count() for group in trainer.groups.all()])
+
+        return render(request,
+                      template_name='control_panel/trainer.html',
+                      context={'trainer': trainer,
+                               'students': students,
+                               'week_classes': week_classes,
+                               'form': form})
+
+    def post(self, request, pk):
+        trainer = get_object_or_404(Trainer, pk=pk)
+        form = TrainerForm(instance=trainer, data=request.POST)
+        students = sum([group.members.all().count() for group in trainer.groups.all()])
+        week_classes = sum([group.days.all().count() for group in trainer.groups.all()])
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('trainer', args=[trainer.pk]))
+        return render(request,
+                      template_name='control_panel/trainer.html',
+                      context={'trainer': trainer,
+                               'students': students,
+                               'week_classes': week_classes,
+                               'form': form})
+
+
+class CreateTrainerView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = TrainerForm()
+        return render(request,
+                      template_name='control_panel/add/trainer.html',
+                      context={'form': form})
+
+    def post(self, request):
+        form = TrainerForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('trainers'))
+        return render(request,
+                      template_name='control_panel/add/trainer.html',
+                      context={'form': form})
+
+
+class DeleteTrainerView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        trainer = get_object_or_404(Trainer, pk=pk)
+        trainer.delete()
+        return redirect('trainers')
+
+
+class GroupsView(LoginRequiredMixin, View):
 
     def get(self, request):
 
+        search_query = request.GET.get('search_query')
+        if search_query:
+            groups = Group.objects.filter(Q(activity__name__icontains=search_query) |
+                                          Q(trainer__first_name__icontains=search_query) |
+                                          Q(trainer__last_name__icontains=search_query))
+        else:
+            groups = Group.objects.all()
         return render(request,
-                      template_name='control_panel/map.html')
+                      template_name='control_panel/groups.html',
+                      context={'groups': groups})
+
+
+class GroupView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        group = get_object_or_404(Group, pk=pk)
+        form = GroupForm(instance=group)
+        return render(request,
+                      template_name='control_panel/group.html',
+                      context={'group': group,
+                               'form': form})
+
+    def post(self, request, pk):
+        group = get_object_or_404(Group, pk=pk)
+        form = GroupForm(instance=group, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('group', args=[group.id]))
+        return render(request,
+                      template_name='control_panel/group.html',
+                      context={'group': group,
+                               'form': form})
+
+
+class CreateGroupView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = GroupForm()
+        return render(request,
+                      template_name='control_panel/add/group.html',
+                      context={'form': form})
+
+    def post(self, request):
+        form = GroupForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('groups'))
+        return render(request,
+                      template_name='control_panel/add/group.html',
+                      context={'form': form})
+
+
+class DeleteGroupView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        group = get_object_or_404(Group, pk=pk)
+        group.delete()
+        return redirect('groups')
 
 
 class ProductsView(LoginRequiredMixin, View):
 
     def get(self, request):
 
-        products = Product.objects.all().order_by('-price')
+        search_query = request.GET.get('search_query')
+        if search_query:
+            products = Product.objects.filter(Q(name__icontains=search_query)).order_by('-price')
+        else:
+            products = Product.objects.all().order_by('-price')
         return render(request,
                       template_name='control_panel/products.html',
-                      context={'products': products})
+                      context={'products': products,
+                               'search_query': search_query})
 
 
-class TrainerView(LoginRequiredMixin, View):
+class ProductView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
-
-        trainer = get_object_or_404(Trainer, pk=pk)
+        product = get_object_or_404(Product, pk=pk)
+        form = ProductForm(instance=product)
         return render(request,
-                      template_name='control_panel/trainer.html',
-                      context={'trainer': trainer})
+                      template_name='control_panel/product.html',
+                      context={'product': product,
+                               'form': form})
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = ProductForm(instance=product, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('product', args=[product.id]))
+        return render(request,
+                      template_name='control_panel/product.html',
+                      context={'product': product,
+                               'form': form})
 
 
-class TrainersView(LoginRequiredMixin, View):
+class CreateProductView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = ProductForm()
+        return render(request,
+                      template_name='control_panel/add/product.html',
+                      context={'form': form})
+
+    def post(self, request):
+        form = ProductForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('products'))
+        return render(request,
+                      template_name='control_panel/add/product.html',
+                      context={'form': form})
+
+
+class DeleteProductView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.delete()
+        return HttpResponseRedirect(reverse('products'))
+
+
+class ActivitiesView(LoginRequiredMixin, View):
 
     def get(self, request):
 
-        trainers = Trainer.objects.all().order_by('last_name')
+        search_query = request.GET.get('search_query')
+        if search_query:
+            activities = Activity.objects.filter(Q(name__icontains=search_query)).order_by('name')
+        else:
+            activities = Activity.objects.all().order_by('name')
         return render(request,
-                      template_name='control_panel/trainers.html',
-                      context={'trainers': trainers})
+                      template_name='control_panel/activities.html',
+                      context={'activities': activities,
+                               'search_query': search_query})
+
+
+class ActivityView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+
+        activity = get_object_or_404(Activity, pk=pk)
+        form = ActivityForm(instance=activity)
+        return render(request,
+                      template_name='control_panel/add/activity.html',
+                      context={'activity': activity,
+                               'form': form})
+    
+    def post(self, request, pk):
+
+        activity = get_object_or_404(Activity, pk=pk)
+        form = ActivityForm(instance=activity, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('activity', args=[activity.id]))
+        return render(request,
+                      template_name='control_panel/add/activity.html',
+                      context={'activity': activity,
+                               'form': form})
+
+
+class CreateActivityView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = ActivityForm()
+        return render(request,
+                      template_name='control_panel/add/activity.html',
+                      context={'form': form})
+
+    def post(self, request):
+        form = ActivityForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('activities'))
+        return render(request,
+                      template_name='control_panel/add/activity.html',
+                      context={'form': form})
+
+
+class DeleteActivityView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        activity = get_object_or_404(Activity, pk=pk)
+        activity.delete()
+        return HttpResponseRedirect(reverse('activities'))
+
+
+class MapView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request,
+                      template_name='control_panel/map.html')
 
 
 
@@ -157,77 +411,6 @@ class TrainersView(LoginRequiredMixin, View):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class CreateMemberView(LoginRequiredMixin, CreateView):
-    form_class = MemberForm
-    template_name = './control_panel/member/templates/control_panel/old/member_form.html'
-    success_url = reverse_lazy('show_members')
-
-
-
-
-
-class DeleteMemberView(LoginRequiredMixin, DeleteView):
-    model = Member
-    template_name = './control_panel/member/templates/control_panel/old/member_confirm_delete.html'
-    success_url = reverse_lazy('show_members')
-
-
-class CreateTrainerView(LoginRequiredMixin, CreateView):
-    form_class = TrainerForm
-    template_name = './control_panel/trainer/templates/control_panel/old/trainer_form.html'
-    success_url = reverse_lazy('show_trainers')
-
-
-class UpdateTrainerView(LoginRequiredMixin, UpdateView):
-    form_class = TrainerForm
-    template_name = './control_panel/trainer/templates/control_panel/old/trainer_update_form.html'
-    model = Trainer
-    success_url = reverse_lazy('show_trainers')
-
-
-class DeleteTrainerView(LoginRequiredMixin, DeleteView):
-    model = Trainer
-    template_name = './control_panel/trainer/templates/control_panel/old/trainer_confirm_delete.html'
-    success_url = reverse_lazy('show_trainers')
-
-
-
-class CreateProductView(LoginRequiredMixin, CreateView):
-    form_class = ProductForm
-    template_name = './control_panel/product/templates/control_panel/old/product_form.html'
-    success_url = reverse_lazy('show_products')
-
-
-class UpdateProductView(LoginRequiredMixin, UpdateView):
-    form_class = ProductForm
-    template_name = './control_panel/product/templates/control_panel/old/product_update_form.html'
-    model = Product
-    success_url = reverse_lazy('show_products')
-
-
-class DeleteProductView(LoginRequiredMixin, DeleteView):
-    model = Product
-    template_name = './control_panel/product/templates/control_panel/old/product_confirm_delete.html'
-    success_url = reverse_lazy('show_products')
 
 
 class CreatePassView(LoginRequiredMixin, CreateView):
@@ -346,26 +529,6 @@ class UpdatePassStatusView(LoginRequiredMixin, View):
         return redirect('/show_member/{}'.format(user_pass.member.id))
 
 
-class ShowScheduleView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        return render(request, template_name='control_panel/schedule.html', context={})
-
-
-class ShowGroupsView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        search = request.GET.get('search')
-        groups = Group.objects.all().order_by('name')
-
-        if search:
-            groups = Group.objects.filter(Q(name__icontains=search) |
-                                          Q(trainer__last_name__icontains=search)).order_by('name')
-
-        return render(request, template_name='control_panel/old/group/show_groups.html', context={'groups': groups,
-                                                                                              'search': search})
-
-
 class DeleteGroupMemberView(LoginRequiredMixin, View):
 
     def get(self, request, group_id, member_id, next):
@@ -400,25 +563,6 @@ class AddGroupMembersView(LoginRequiredMixin, View):
             form.save()
             return redirect('show_groups')
         return render(request, template_name='control_panel/old/group/add_members_form.html', context={'form': form})
-
-
-class CreateGroupView(LoginRequiredMixin, CreateView):
-    form_class = GroupForm
-    template_name = './control_panel/old/group/group_form.html'
-    success_url = reverse_lazy('show_groups')
-
-
-class UpdateGroupView(LoginRequiredMixin, UpdateView):
-    form_class = GroupForm
-    template_name = './control_panel/old/group/group_update_form.html'
-    model = Group
-    success_url = reverse_lazy('show_groups')
-
-
-class DeleteGroupView(LoginRequiredMixin, DeleteView):
-    model = Group
-    template_name = './control_panel/old/group/group_confirm_delete.html'
-    success_url = reverse_lazy('show_groups')
 
 
 class ShowPaymentsView(LoginRequiredMixin, View):
@@ -458,3 +602,25 @@ class ShowPaymentsView(LoginRequiredMixin, View):
                                'user_status': user_status,
                                'pass_status': pass_status
                                })
+
+
+class UserView(LoginRequiredMixin, View):
+
+    def get(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        form = EditUserForm(instance=user)
+        return render(request, template_name='control_panel/user.html', context={'form': form})
+
+    def post(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        form = EditUserForm(request.POST, instance=user)
+        if user.username == 'tester':
+            form.add_error('first_name', 'Tester nie może zmienić użytkownika')
+            return render(request, template_name='control_panel/user.html', context={'form': form})
+
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect(reverse('home'))
+
+        return render(request, template_name='control_panel/user.html', context={'form': form})

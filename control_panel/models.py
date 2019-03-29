@@ -1,21 +1,22 @@
-from datetime import date
+from datetime import date, datetime
 from django.db import models
 
 GENDER = ((1, 'Kobieta'), (2, 'Mężczyzna'))
 TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
 TYPE_OF_EMPLOYMENT = ((1, 'UoP'), (2, 'UoZ'), (3, 'UoD'), (4, 'B2B'))
 TYPE_OF_LEVEL = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
+COLORS = ((1, 'green'), (2, 'red'), (3, 'black'), (4, 'yellow'), (5, 'blue'))
 
 
 class Member(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
-    birth_date = models.DateField(null=True)
+    birth_date = models.DateField(null=True, blank=True)
     gender = models.SmallIntegerField(choices=GENDER, default=1)
-    phone = models.IntegerField(null=True)
+    phone = models.IntegerField(null=True, blank=True)
     mail = models.EmailField(unique=True)
     status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='user_img/', default='user_img/default.jpg')
 
     def __str__(self):
@@ -25,14 +26,14 @@ class Member(models.Model):
 class Trainer(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
-    birth_date = models.DateField(null=True)
+    birth_date = models.DateField(null=True, blank=True)
     gender = models.SmallIntegerField(choices=GENDER, default=1)
     phone = models.IntegerField()
-    mail = models.EmailField(unique=True, null=True)
+    mail = models.EmailField(unique=True, null=True, blank=True)
     status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='trainer_img/', default='trainer_img/default.jpg')
-    hourly_rate = models.DecimalField(decimal_places=2, max_digits=10, null=True)
+    hourly_rate = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
     employment_type = models.SmallIntegerField(choices=TYPE_OF_EMPLOYMENT, default=1)
 
     def __str__(self):
@@ -53,8 +54,6 @@ class Activity(models.Model):
     name = models.CharField(max_length=64)
     level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, default=1)
     description = models.TextField(null=True, blank=True)
-    products = models.ManyToManyField(Product)
-    trainers = models.ManyToManyField(Trainer)
 
     def __str__(self):
         initials = [word[0] for word in self.name.split(' ')]
@@ -62,14 +61,17 @@ class Activity(models.Model):
 
 
 class Group(models.Model):
-    color = models.CharField(max_length=7)
+    color = models.SmallIntegerField(choices=COLORS)
     max_capacity = models.IntegerField()
     activity = models.ForeignKey(Activity, models.CASCADE, related_name='groups')
     trainer = models.ForeignKey(Trainer, models.SET_NULL, null=True, related_name='groups')
     members = models.ManyToManyField(Member)
+    days = models.ManyToManyField('Day')
+    class_time = models.TimeField()
 
     def __str__(self):
-        return '{} {}'.format(self.activity, self.trainer)
+        days = ' - '.join([day.name[:3] for day in self.days.all()])
+        return '{} {} {}'.format(self.activity, days, self.class_time)
 
 
 class Pass(models.Model):
@@ -91,18 +93,14 @@ class Entry(models.Model):
         return str(self.date)
 
 
+class Payment(models.Model):
+    date = models.DateField()
+    current_pass = models.OneToOneField(Pass, on_delete=models.SET_NULL, null=True, blank=True, related_name='payment')
+    amount = models.DecimalField(decimal_places=2, max_digits=10)
+
+
 class Day(models.Model):
     name = models.CharField(max_length=10)
 
     def __str__(self):
         return self.name
-
-
-class ClassTime(models.Model):
-    group = models.ForeignKey(Group, models.CASCADE)
-    days = models.ManyToManyField(Day)
-    class_time = models.TimeField(null=True)
-
-    def __str__(self):
-        days = ' - '.join([day.name[:3] for day in self.days.all()])
-        return '{} {} {}'.format(self.group.activity, days, self.class_time)

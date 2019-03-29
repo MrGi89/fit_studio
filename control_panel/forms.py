@@ -1,20 +1,109 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from control_panel.models import Member, Trainer, Product, Pass, Group
+from control_panel.models import Activity, Group, Member, Product, Pass, Trainer
 
 
 class LoginForm(forms.Form):
-
     email = forms.EmailField(label='')
-    email.widget.attrs.update({'class': 'form-control', 'placeholder': 'Email', 'required': True, 'autofocus': True})
-
     password = forms.CharField(label='', widget=forms.PasswordInput)
-    password.widget.attrs.update({'class': 'form-control', 'placeholder': 'Password', 'required': True})
+
+    email.widget.attrs.update({'class': 'form-control',
+                               'placeholder': 'Email',
+                               'required': True,
+                               'autofocus': True})
+    password.widget.attrs.update({'class': 'form-control',
+                                  'placeholder': 'Password',
+                                  'required': True})
+
+
+class MemberForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['first_name', 'last_name', 'birth_date', 'gender', 'phone', 'mail', 'status', 'notes']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['notes'].widget.attrs.update({'rows': '4'})
+        self.fields['birth_date'].widget.attrs.update({'autocomplete': 'off'})
+
+    class Meta:
+        model = Member
+        exclude = ('img',)
+
+
+class TrainerForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['first_name', 'last_name', 'birth_date', 'gender', 'phone', 'mail', 'status', 'notes',
+                           'hourly_rate', 'employment_type']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['notes'].widget.attrs.update({'rows': '4'})
+        self.fields['birth_date'].widget.attrs.update({'autocomplete': 'off'})
+
+    class Meta:
+        model = Trainer
+        exclude = ('img',)
+
+
+class GroupForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['color', 'max_capacity', 'activity', 'trainer', 'days', 'class_time']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['days'].widget.attrs.update({'size': 8})
+
+    class Meta:
+        model = Group
+        exclude = ('members',)
+
+
+class ProductForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['name', 'validity', 'available_entries', 'price']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ActivityForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['name', 'level', 'description']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['description'].widget.attrs.update({'rows': '4'})
+
+    class Meta:
+        model = Activity
+        fields = '__all__'
+
+
+
+
+class GroupAddMembersForm(forms.ModelForm):
+
+    class Meta:
+        model = Group
+        fields = ('members',)
+        widgets = {'members': forms.CheckboxSelectMultiple, }
 
 
 class EditUserForm(forms.ModelForm):
-
     password = forms.CharField(label='Hasło', widget=forms.PasswordInput, required=False)
     password_confirmation = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput, required=False)
 
@@ -33,7 +122,7 @@ class EditUserForm(forms.ModelForm):
             'last_name': 'Nazwisko',
             'email': 'Adres e-mail',
         }
-        
+
     def clean(self):
         email = self.cleaned_data['email']
         user = User.objects.filter(email=email)
@@ -52,51 +141,6 @@ class EditUserForm(forms.ModelForm):
             user.save()
         return user
 
-
-class MemberForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        form_control_fields = ['first_name', 'last_name', 'phone', 'mail', 'status', 'description']
-        for field_name in form_control_fields:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-
-        self.fields['description'].widget.attrs.update({'rows': '4'})
-        self.fields['description'].required = False
-
-    class Meta:
-        model = Member
-        fields = '__all__'
-
-
-class TrainerForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        form_control_fields = ['first_name', 'last_name', 'phone', 'mail']
-        for field_name in form_control_fields:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-        self.fields['mail'].required = False
-
-    class Meta:
-        model = Trainer
-        fields = '__all__'
-
-
-class ProductForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        form_control_fields = ['name', 'validity', 'available_entries', 'activity', 'price']
-        for field_name in form_control_fields:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-
-    class Meta:
-        model = Product
-        fields = '__all__'
 
 
 class PassForm(forms.ModelForm):
@@ -125,27 +169,3 @@ class UpdatePassForm(forms.ModelForm):
     class Meta:
         model = Pass
         fields = ('start_date', 'end_date')
-
-
-class GroupForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        form_control_fields = ['name', 'level', 'program', 'trainer']
-        for field_name in form_control_fields:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-
-    class Meta:
-        model = Group
-        exclude = ('members', )
-
-
-class GroupAddMembersForm(forms.ModelForm):
-
-    class Meta:
-        model = Group
-        fields = ('members', )
-        widgets = {'members': forms.CheckboxSelectMultiple, }
-
-

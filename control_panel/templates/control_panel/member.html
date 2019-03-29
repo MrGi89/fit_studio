@@ -16,11 +16,11 @@
                         </div>
                         <div>
                             <small>Entries</small>
-                            <h6>{{ entries }}</h6>
+                            <h6>{{ entries_count }}</h6>
                         </div>
                         <div>
                             <small>Spent</small>
-                            <h6>4957 zł</h6>
+                            <h6>{{ payments_count }}</h6>
                         </div>
                     </div>
                 </div>
@@ -29,17 +29,21 @@
                 <div class="profile-info">
                     <div class="profile-boxes">
                         <div>
-                            <a href="" data-toggle="modal" data-target="#send-to-member"><i
-                                class="fas fa-envelope"></i></a>
+                            <a href="mailto:{{ member.mail }}?subject=Mail from Fit Studio">
+                                <i class="fas fa-envelope"></i>
+                            </a>
                             <small>Message</small>
                         </div>
                         <div>
-                            <a href="" data-toggle="modal" data-target="#message-history"><i
-                                class="fas fa-mail-bulk"></i></a>
-                            <small>History</small>
+                            <a href="" data-toggle="modal" data-target="#group-member">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            <small>Groups</small>
                         </div>
                         <div>
-                            <a href="" data-toggle="modal" data-target="#delete-member"><i class="fas fa-trash-alt"></i></a>
+                            <a href="" data-toggle="modal" data-target="#delete-member">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
                             <small>Delete</small>
                         </div>
                     </div>
@@ -48,13 +52,16 @@
             <div class="window">
                 <div class="heading">
                     <h4>Groups</h4>
-                    <button type="button" class="btn btn-sm btn-outline-secondary">modify assigment</button>
                 </div>
-                <ul class="list-group">
+                <ul class="list-group profile-list">
                     {% for group in member.group_set.all %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ group }}
+                            <a href="{% url 'group' group.pk %}"><i class="fas fa-users"></i>{{ group }}</a>
                             <span class="badge badge-primary badge-pill group-count">{{ group.members.count }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            not assigned to any group
                         </li>
                     {% endfor %}
                 </ul>
@@ -64,56 +71,61 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Profile</h4>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" id="update-member">save changes
+                    <button type="submit" form="mem-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save
+                        changes
                     </button>
                 </div>
-                <form>
+                <form id="mem-upd" method="POST" action="{% url 'member' member.id %}">
+                    {% csrf_token %}
+                    {{ member_form.first_name.errors }}
+                    {{ member_form.last_name.errors }}
+                    {{ member_form.status.errors }}
+                    {{ member_form.gender.errors }}
+                    {{ member_form.mail.errors }}
+                    {{ member_form.phone.errors }}
+                    {{ member_form.notes.errors }}
                     <div class="form-row">
-                        <div class="col">
-                            <label for="mfn" class="col-form-label-sm">First Name</label>
-                            <input type="text" class="form-control" id="mfn" value={{ member.first_name }}>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.first_name.id_for_label }}" class="col-form-label-sm">First
+                                Name</label>
+                            {{ member_form.first_name }}
                         </div>
-                        <div class="col">
-                            <label for="mln" class="col-form-label-sm">Last Name</label>
-                            <input type="text" class="form-control" id="mln" value={{ member.last_name }}>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                                Name</label>
+                            {{ member_form.last_name }}
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col">
-                            <label for="gender" class="col-form-label-sm">Gender</label>
-                            <select class="custom-select mr-sm-2" id="gender">
-                                <option value="1" {% if member.gender == 1 %}selected{% endif %}>Kobieta</option>
-                                <option value="2" {% if member.gender == 2 %}selected{% endif %}>Mężczyzna</option>
-                            </select>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.gender.id_for_label }}" class="col-form-label-sm">Gender</label>
+                            {{ member_form.gender }}
                         </div>
-                        <div class="col">
-                            <label for="bday" class="col-form-label-sm">Birth Day</label>
-                            <input type="date" class="form-control" id="bday"
-                                   value="{{ member.birth_date | date:"Y-m-d" }}">
+                        <div class="col fieldWrapper" id="bday">
+                            <label for="{{ member_form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
+                                Day</label>
+                            {{ member_form.birth_date }}
                         </div>
-                        <div class="col">
-                            <label for="sts" class="col-form-label-sm">Status</label>
-                            <select class="custom-select mr-sm-2" id="sts">
-                                <option value="1" {% if member.status == 1 %}selected{% endif %}>Aktywny</option>
-                                <option value="2" {% if member.status == 2 %}selected{% endif %}>Nieaktywny</option>
-                            </select>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.status.id_for_label }}" class="col-form-label-sm">Status</label>
+                            {{ member_form.status }}
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col">
-                            <label for="mail" class="col-form-label-sm">E-mail</label>
-                            <input type="text" class="form-control" id="mail" value={{ member.mail }}>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
+                            {{ member_form.mail }}
                         </div>
-                        <div class="col">
-                            <label for="phone" class="col-form-label-sm">Phone number</label>
-                            <input type="text" class="form-control" id="phone" value={{ member.phone }}>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.phone.id_for_label }}" class="col-form-label-sm">Phone
+                                number</label>
+                            {{ member_form.phone }}
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col">
-                            <label for="dsc" class="col-form-label-sm">Notes</label>
-                            <textarea class="form-control" id="dsc" rows="4" cols="50">{% if member.notes %}
-                                {{ member.notes }}{% endif %}</textarea>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.notes.id_for_label }}" class="col-form-label-sm">Notes</label>
+                            {{ member_form.notes }}
                         </div>
                     </div>
                 </form>
@@ -121,7 +133,9 @@
             <div class="window profile-payments">
                 <div class="heading">
                     <h4>Passes</h4>
-                    <button type="button" class="btn btn-sm btn-outline-secondary">add pass</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add-pass">add pass
+                    </button>
                 </div>
                 <table class="table table-striped">
                     <thead>
@@ -178,13 +192,34 @@
             </div>
         </div>
     </div>
-    {#SEND EMAIL TO MEMBER MODAL#}
-    <div class="modal fade" id="send-to-member" tabindex="-1" role="dialog" aria-labelledby="send-to-member-label"
+    {#  ADD PASS MODAL  #}
+    <div class="modal fade" id="add-pass" tabindex="-1" role="dialog" aria-labelledby="add-pass-label"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="send-to-member-label">New message to {{ member }}</h5>
+                    <h5 class="modal-title" id="delete-member-label">Add pass</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to add pass?
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="" class="btn btn-primary my-btn">Add</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#GROUP MEMBER MODAL#}
+    <div class="modal fade" id="group-member" tabindex="-1" role="dialog" aria-labelledby="group-member-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="group-member-label">Delete member?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -207,37 +242,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                    <a href="" class="btn btn-primary my-btn">Send message</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {#MAIL HISTORY MODAL#}
-    <div class="modal fade" id="message-history" tabindex="-1" role="dialog" aria-labelledby="message-history-label"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="message-history-label">Messages history</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h5>Tytuł maila</h5>
-                    <p>data wysyłki</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque aut consectetur ea impedit
-                        necessitatibus qui rem rerum suscipit tenetur vero?</p>
-                    <hr>
-                    <h5>Tytuł maila</h5>
-                    <p>data wysyłki</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque aut consectetur ea impedit
-                        necessitatibus qui rem rerum suscipit tenetur vero?</p>
-                    <hr>
-                </div>
-                <div class="modal-footer">
-                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="" class="btn btn-primary my-btn">Assign</a>
                 </div>
             </div>
         </div>

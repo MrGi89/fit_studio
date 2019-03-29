@@ -1,11 +1,11 @@
 {% extends 'control_panel/main.html' %}
-{% block site_name %}PRODUCTS{% endblock %}
+{% block site_name %}Activities{% endblock %}
 {% block content %}
     <div class="window">
         <div class="heading">
             <div>
-                <h3>Products Table</h3>
-                <small>Shows all products</small>
+                <h3>Activities Table</h3>
+                <small>Shows all activities</small>
             </div>
             <div class="search-bar">
                 <button type="submit" form="search-query" class="search-btn">
@@ -24,27 +24,27 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Validity</th>
-                <th scope="col">Available entries</th>
-                <th scope="col">Price</th>
+                <th scope="col">Prefix</th>
+                <th scope="col">Level</th>
+                <th scope="col">Description</th>
                 <th scope="col" colspan="2">Actions</th>
             </tr>
             </thead>
             <tbody>
-            {% for product in products %}
+            {% for activity in activities %}
                 <tr>
                     <th scope="row">{{ forloop.counter0 | add:1 }}</th>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.validity }}</td>
-                    <td>{{ product.available_entries }}</td>
-                    <td>{{ product.price }}</td>
+                    <td>{{ activity.name }}</td>
+                    <td>{{ activity }}</td>
+                    <td>{{ activity.get_level_display }}</td>
+                    <td>{{ activity.description }}</td>
                     <td>
-                        <a href="{% url 'product' product.pk %}">
+                        <a href="">
                             <i class="fa fa-info-circle"></i>
                         </a>
                     </td>
                     <td>
-                        <a href="#" data-toggle="modal" data-target="#delete-product-{{ product.id }}">
+                        <a href="#" data-toggle="modal" data-target="#delete-activity-{{ activity.id }}">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
@@ -53,23 +53,23 @@
             </tbody>
         </table>
     </div>
-    {% for product in products %}
-        <div class="modal fade" id="delete-product-{{ product.id }}" tabindex="-1" role="dialog"
-             aria-labelledby="delete-product-label" aria-hidden="true">
+    {% for activity in activities %}
+        <div class="modal fade" id="delete-activity-{{ activity.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="delete-member-label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="delete-product-label">Delete product?</h5>
+                        <h5 class="modal-title" id="delete-activity-label">Delete activity?</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete product {{ product }}?
+                        Are you sure you want to delete activity {{ activity }}?
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                        <a href="{% url 'delete_product' product.id %}" class="btn btn-primary my-btn">Delete</a>
+                        <a href="{% url 'delete_activity' activity.pk %}" class="btn btn-primary my-btn">Delete</a>
                     </div>
                 </div>
             </div>

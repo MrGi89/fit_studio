@@ -1,0 +1,51 @@
+html, body, .container {
+    height: 100%;
+}
+
+body {
+    background-color: #dedcd5;
+}
+h1 {
+    color: #272573;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.my-btn {
+    background-color: #393873;
+    border-color: #393873;
+}
+.my-btn:hover, .my-btn:active, .my-btn:focus {
+    background-color: #272573 !important;
+    border-color: #272573 !important;
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#first-row {
+    height: 20%;
+    justify-content: center;
+        border-bottom: 1px solid #272573;
+
+}
+
+#second-row {
+    height: 80%;
+    justify-content: flex-start;
+}
+
+.login-border {
+    margin-top: 80px;
+    width: 30%;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

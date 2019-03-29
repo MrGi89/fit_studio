@@ -1,0 +1,98 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}ADD{% endblock %}
+{% block content %}
+    <div class="profile">
+        <div class="first-col">
+            <div class="window">
+                <div class="heading">
+                    <h4>Categories</h4>
+                </div>
+                <ul class="list-group profile-list">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'add_member' %}"><i class="fas fa-user"></i>Member</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'add_trainer' %}"><i class="fas fa-user-graduate"></i>Trainer</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'add_product' %}"><i class="fab fa-product-hunt"></i>Product</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'add_activity' %}"><i class="fas fa-clipboard-list"></i>Activity</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'add_group' %}"><i class="fa fa-users"></i>Group</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="second-col">
+            <div class="window profile-details">
+                {% block add_form %}
+                    <div class="heading">
+                        <h4>Add Member</h4>
+                        <button type="submit" form="member-add" class="btn btn-sm btn-outline-secondary">save changes</button>
+                    </div>
+                    <form id="member-add" method="POST" action="#">
+                        {% csrf_token %}
+                        {{ form.first_name.errors }}
+                        {{ form.last_name.errors }}
+                        {{ form.status.errors }}
+                        {{ form.gender.errors }}
+                        {{ form.mail.errors }}
+                        {{ form.phone.errors }}
+                        {{ form.notes.errors }}
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.first_name.id_for_label }}" class="col-form-label-sm">First
+                                    Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                                    Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.gender.id_for_label }}"
+                                       class="col-form-label-sm">Gender</label>
+                                {{ form.gender }}
+                            </div>
+                            <div class="col fieldWrapper" id="bday">
+                                <label for="{{ form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
+                                    Day</label>
+                                {{ form.birth_date }}
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.status.id_for_label }}"
+                                       class="col-form-label-sm">Status</label>
+                                {{ form.status }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.mail.id_for_label }}"
+                                       class="col-form-label-sm">E-mail</label>
+                                {{ form.mail }}
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.phone.id_for_label }}" class="col-form-label-sm">Phone
+                                    number</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ form.notes.id_for_label }}"
+                                       class="col-form-label-sm">Notes</label>
+                                {{ form.notes }}
+                            </div>
+                        </div>
+                    </form>
+                {% endblock add_form%}
+            </div>
+        </div>
+    </div>
+{% endblock %}

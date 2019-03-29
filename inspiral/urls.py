@@ -19,52 +19,53 @@ from django.conf.urls import url
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import settings
-from control_panel.views import HomeView, LoginView, LogoutView, UserView, MembersView, MemberView, \
+from control_panel.views import LoginView, LogoutView, UserView, MembersView, MemberView, \
     CreateMemberView, DeleteMemberView, TrainersView, CreateTrainerView, \
-    UpdateTrainerView, DeleteTrainerView, ProductsView, CreateProductView, UpdateProductView, DeleteProductView, \
+    DeleteTrainerView, ProductsView, CreateProductView, DeleteProductView, \
     CreatePassView, DeletePassView, UpdatePassView, UpdatePassStatusView, AddPassEntryView, DeletePassEntryView, \
-    ShowScheduleView, ShowGroupsView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, \
-    DeleteGroupView, UpdateGroupView, ShowPaymentsView, LoginAsAnonymous, MapView, TrainerView
-
-from control_panel.apiviews import RestMemberView
+    GroupsView, GroupView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, \
+    DeleteGroupView, ShowPaymentsView, LoginAsAnonymous, MapView, TrainerView, ActivitiesView, ActivityView, \
+    CreateActivityView, DeleteActivityView, ProductView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^$', LoginView.as_view(), name='login'),
+    url(r'^login_as_anonymous/$', LoginAsAnonymous.as_view(), name='login_as_anonymous'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
-    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^edit_user/(?P<user_id>\d+)/$', UserView.as_view(), name='edit_user'),
-    url(r'^tester_login/$', LoginAsAnonymous.as_view(), name='tester_login'),
 
     url(r'^members/$', MembersView.as_view(), name='members'),
     url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
-    url(r'^rest/member/(?P<pk>\d+)/$', RestMemberView.as_view(), name='rest-member'),
+    url(r'^member/create/$', CreateMemberView.as_view(), name='add_member'),
+    url(r'^member/delete/(?P<pk>\d+)/$', DeleteMemberView.as_view(), name='delete_member'),
 
     url(r'^map/$', MapView.as_view(), name='map'),
 
     url(r'^trainers/$', TrainersView.as_view(), name='trainers'),
     url(r'^trainer/(?P<pk>\d+)/$', TrainerView.as_view(), name='trainer'),
-
-
-
-
-    url(r'^member/create/$', CreateMemberView.as_view(), name='create_member'),
-    url(r'^member/update/(?P<pk>\d+)/$', RestMemberView.as_view(), name='update_member'),
-    url(r'^member/delete/(?P<pk>\d+)/$', DeleteMemberView.as_view(), name='delete_member'),
-
-    url(r'^trainer/create/$', CreateTrainerView.as_view(), name='create_trainer'),
-    url(r'^trainer/update/(?P<pk>\d+)/$', UpdateTrainerView.as_view(), name='update_trainer'),
+    url(r'^trainer/create/$', CreateTrainerView.as_view(), name='add_trainer'),
     url(r'^trainer/delete/(?P<pk>\d+)/$', DeleteTrainerView.as_view(), name='delete_trainer'),
 
+    url(r'^groups/$', GroupsView.as_view(), name='groups'),
+    url(r'^group/(?P<pk>\d+)/$', GroupView.as_view(), name='group'),
+    url(r'^group/create/$', CreateGroupView.as_view(), name='add_group'),
+    url(r'^group/delete/(?P<pk>\d+)/$', DeleteGroupView.as_view(), name='delete_group'),
+
     url(r'^products/$', ProductsView.as_view(), name='products'),
-    url(r'^product/create/$', CreateProductView.as_view(), name='create_product'),
-    url(r'^product/update/(?P<pk>\d+)/$', UpdateProductView.as_view(), name='update_product'),
+    url(r'^product/(?P<pk>\d+)/$', ProductView.as_view(), name='product'),
+    url(r'^product/create/$', CreateProductView.as_view(), name='add_product'),
     url(r'^product/delete/(?P<pk>\d+)/$', DeleteProductView.as_view(), name='delete_product'),
 
-    url(r'^groups/$', ShowGroupsView.as_view(), name='groups'),
-    url(r'^group/create/$', CreateGroupView.as_view(), name='create_group'),
-    url(r'^group/update/(?P<pk>\d+)/$', UpdateGroupView.as_view(), name='update_group'),
-    url(r'^group/delete/(?P<pk>\d+)/$', DeleteGroupView.as_view(), name='delete_group'),
+    url(r'^activities/$', ActivitiesView.as_view(), name='activities'),
+    url(r'^activity/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
+    url(r'^activity/create/$', CreateActivityView.as_view(), name='add_activity'),
+    url(r'^activity/delete/(?P<pk>\d+)/$', DeleteActivityView.as_view(), name='delete_activity'),
+
+
+
+
+
+
 
     url(r'^group/delete_member/(?P<group_id>\d+)/(?P<member_id>\d+)/(?P<next>\d)/$', DeleteGroupMemberView.as_view(),
         name='delete_group_member'),
@@ -81,10 +82,7 @@ urlpatterns = [
     url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
     url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
 
-
-    url(r'^show_schedule/$', ShowScheduleView.as_view(), name='show_schedule'),
     url(r'^show_payments/$', ShowPaymentsView.as_view(), name='show_payments'),
-
 
 ]
 

@@ -1,108 +1,162 @@
 {% extends 'control_panel/main.html' %}
-{% block site_name %}MEMBER{% endblock %}
+{% block site_name %}TRAINER{% endblock %}
 {% block content %}
-    <div class="member">
-        <div id="first-col">
-                <div class="window profile-info">
-                    <img src="{{ trainer.img.url }}" alt="..." width="100" height="100">
-                    <h5>{{ member }}</h5>
+    <div class="profile">
+        <div class="first-col">
+            <div class="window">
+                <div class="profile-info">
                     <div>
-                        ilość zakupionych karnetów
-                        ilość odbytych wejść
-                        ilość zapłaconej gotówki
+                        <img src="{{ trainer.img.url }}" alt="..." width="110" height="110">
+                        <h4>{{ trainer }}</h4>
                     </div>
-                    <div>
-                        <i class="fas fa-envelope"></i>
-                        <i class="fas fa-users"></i>
-                        <i class="fas fa-trash-alt"></i>
+                    <div class="profile-boxes">
+                        <div>
+                            <small>Groups</small>
+                            <h6>{{ trainer.groups.all.count }}</h6>
+                        </div>
+                        <div>
+                            <small>Students</small>
+                            <h6>{{ students }}</h6>
+                        </div>
+                        <div>
+                            <small>Classes a week</small>
+                            <h6>{{ week_classes }}</h6>
+                        </div>
                     </div>
                 </div>
-                <div class="window profile-trainers">
-                    trenerki
+            </div>
+            <div class="window">
+                <div class="profile-info">
+                    <div class="profile-boxes">
+                        <div>
+                            <a href="mailto:grzegorz.wojdalski@gmail.com?subject=Mail from Our Site">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <small>Message</small>
+                        </div>
+                        <div>
+                            <a href="">
+                                <i class="fa fa-users"></i>
+                            </a>
+                            <small>Groups</small>
+                        </div>
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#delete-member">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                            <small>Delete</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="window profile-friends">
-                    koleżanki z grupy z odnośnikami
+            </div>
+            <div class="window">
+                <div class="heading">
+                    <h4>Groups</h4>
                 </div>
-                <div class="window profile-friends">
-                    historia korespondencji
-                </div>
+                <ul class="list-group profile-list">
+                    {% for group in trainer.groups.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href=""><i class="fa fa-users"></i>{{ group }}</a>
+                            <span class="badge badge-primary badge-pill group-count">{{ group.members.count }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            not assigned to any group
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-        <div id="second-col">
-                <div class="window profile-details">
-                    <div class="heading">
-                        <h4>Profile</h4>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="update-member">save changes</button>
-                    </div>
-                    <form>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="mfn" class="col-form-label-sm">First Name</label>
-                                <input type="text" class="form-control" id="mfn" value={{ trainer.first_name }}>
-                            </div>
-                            <div class="col">
-                                <label for="mln" class="col-form-label-sm">Last Name</label>
-                                <input type="text" class="form-control" id="mln" value={{ trainer.last_name }}>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="gender" class="col-form-label-sm">Gender</label>
-                                <select class="custom-select mr-sm-2" id="gender">
-                                    <option value="1" {% if trainer.gender == 1 %}selected{% endif %}>Kobieta</option>
-                                    <option value="2" {% if trainer.gender == 2 %}selected{% endif %}>Mężczyzna</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label for="bday" class="col-form-label-sm">Birth Day</label>
-                                <input type="date" class="form-control" id="bday" value="{{ trainer.birth_date | date:"Y-m-d" }}">
-                            </div>
-                            <div class="col">
-                                <label for="sts" class="col-form-label-sm">Status</label>
-                                <select class="custom-select mr-sm-2" id="sts">
-                                    <option value="1" {% if trainer.status == 1 %}selected{% endif %}>Aktywny</option>
-                                    <option value="2" {% if trainer.status == 2 %}selected{% endif %}>Nieaktywny</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="mail" class="col-form-label-sm">E-mail</label>
-                                <input type="text" class="form-control" id="mail" value={{ trainer.mail }}>
-                            </div>
-                            <div class="col">
-                                <label for="phone" class="col-form-label-sm">Phone number</label>
-                                <input type="text" class="form-control" id="phone" value={{ trainer.phone }}>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="et" class="col-form-label-sm">Employment type</label>
-                                <select class="custom-select mr-sm-2" id="et">
-                                    <option value="1" {% if trainer.employment_type == 1 %}selected{% endif %}>Umowa o pracę</option>
-                                    <option value="2" {% if trainer.employment_type == 2 %}selected{% endif %}>Umowa o zlecenie</option>
-                                    <option value="1" {% if trainer.employment_type == 3 %}selected{% endif %}>Umowa o dzieło</option>
-                                    <option value="1" {% if trainer.employment_type == 4 %}selected{% endif %}>Własna działalność</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label for="hr" class="col-form-label-sm">Hourly rate</label>
-                                <input type="text" class="form-control" id="hr" value={% if trainer.hourly_rate %}{{ trainer.hourly_rate }}{% endif %}>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="dsc" class="col-form-label-sm">Notes</label>
-                                <textarea class="form-control" id="dsc" rows="4" cols="50">{% if trainer.notes %}{{ trainer.notes }}{% endif %}</textarea>
-                            </div>
-                        </div>
-                    </form>
+        <div class="second-col">
+            <div class="window profile-details">
+                <div class="heading">
+                    <h4>Profile</h4>
+                    <button type="submit" form="trainer-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save changes</button>
                 </div>
-                <div class="window profile-payments">
-                    <div class="heading">
-                        <h4>Payments</h4>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">add payment</button>
+                <form id="trainer-upd" method="POST" action="{% url 'trainer' trainer.id %}">
+                {% csrf_token %}
+                    {{ form.first_name.errors }}
+                    {{ form.last_name.errors }}
+                    {{ form.status.errors }}
+                    {{ form.gender.errors }}
+                    {{ form.mail.errors }}
+                    {{ form.phone.errors }}
+                    {{ form.notes.errors }}
+                    {{ form.hourly_rate.errors }}
+                    {{ form.employment_type.errors }}
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.first_name.id_for_label }}" class="col-form-label-sm">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.last_name.id_for_label }}" class="col-form-label-sm">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
                     </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.gender.id_for_label }}" class="col-form-label-sm">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                        <div class="col fieldWrapper" id="bday">
+                            <label for="{{ form.birth_date.id_for_label }}" class="col-form-label-sm">Birth Day</label>
+                            {{ form.birth_date }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.status.id_for_label }}" class="col-form-label-sm">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
+                            {{ form.mail }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.phone.id_for_label }}" class="col-form-label-sm">Phone number</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.hourly_rate.id_for_label }}" class="col-form-label-sm">Hourly rate</label>
+                            {{ form.hourly_rate }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.employment_type.id_for_label }}" class="col-form-label-sm">Employment type</label>
+                            {{ form.employment_type }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.notes.id_for_label }}" class="col-form-label-sm">Notes</label>
+                            {{ form.notes }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {#DELETE TRAINER MODAL#}
+    <div class="modal fade" id="delete-trainer" tabindex="-1" role="dialog" aria-labelledby="delete-trainer-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-trainer-label">Delete trainer?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this trainer?
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="{% url 'delete_trainer' trainer.pk %}" class="btn btn-primary my-btn">Delete</a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

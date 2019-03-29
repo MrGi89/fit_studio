@@ -1,0 +1,49 @@
+{% extends 'control_panel/add/member.html' %}
+{% block add_form %}
+    <div class="heading">
+        <h4>Add Group</h4>
+        <button type="submit" form="group-add" class="btn btn-sm btn-outline-secondary">save changes</button>
+    </div>
+    <form id="group-add" method="POST" action="#">
+        {% csrf_token %}
+        {{ form.color.errors }}
+        {{ form.max_capacity.errors }}
+        {{ form.activity.errors }}
+        {{ form.trainer.errors }}
+        {{ form.days.errors }}
+        {{ form.class_time.errors }}
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.activity.id_for_label }}" class="col-form-label-sm">Activity</label>
+                {{ form.activity }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.trainer.id_for_label }}" class="col-form-label-sm">Trainer</label>
+                {{ form.trainer }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.max_capacity.id_for_label }}" class="col-form-label-sm">Max
+                    capacity</label>
+                {{ form.max_capacity }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.color.id_for_label }}"
+                       class="col-form-label-sm">Color</label>
+                {{ form.color }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.days.id_for_label }}" class="col-form-label-sm">Days</label>
+                {{ form.days }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.class_time.id_for_label }}" class="col-form-label-sm">Class
+                    time</label>
+                {{ form.class_time }}
+            </div>
+        </div>
+    </form>
+{% endblock %}

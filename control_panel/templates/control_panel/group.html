@@ -1,0 +1,155 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}GROUP{% endblock %}
+{% block content %}
+    <div class="profile">
+        <div class="first-col">
+            <div class="window">
+                <div class="profile-info">
+                    <div class="profile-boxes">
+                        <div>
+                            <a href="mailto:grzegorz.wojdalski@gmail.com?subject=Mail from Fit Studio">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <small>Message</small>
+                        </div>
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#group-member">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            <small>Members</small>
+                        </div>
+                        <div>
+                            <a href="" data-toggle="modal" data-target="#delete-group">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                            <small>Delete</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="window">
+                <div class="heading">
+                    <h4>Members</h4>
+                </div>
+                <ul class="list-group profile-list">
+                    {% for member in group.members.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'member' member.pk %}"><i class="fas fa-user"></i>{{ member }}</a>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            No members assigned to this group
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="second-col">
+            <div class="window profile-details">
+                <div class="heading">
+                    <h4>Details</h4>
+                    <button type="submit" form="group-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save changes
+                    </button>
+                </div>
+                <form id="group-upd" method="POST" action="#">
+                    {% csrf_token %}
+                    {{ form.color.errors }}
+                    {{ form.max_capacity.errors }}
+                    {{ form.activity.errors }}
+                    {{ form.trainer.errors }}
+                    {{ form.days.errors }}
+                    {{ form.class_time.errors }}
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.activity.id_for_label }}" class="col-form-label-sm">Activity</label>
+                            {{ form.activity }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.trainer.id_for_label }}" class="col-form-label-sm">Trainer</label>
+                            {{ form.trainer }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.max_capacity.id_for_label }}" class="col-form-label-sm">Max
+                                capacity</label>
+                            {{ form.max_capacity }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.color.id_for_label }}"
+                                   class="col-form-label-sm">Color</label>
+                            {{ form.color }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.days.id_for_label }}" class="col-form-label-sm">Days</label>
+                            {{ form.days }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ form.class_time.id_for_label }}" class="col-form-label-sm">Class
+                                time</label>
+                            {{ form.class_time }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {#DELETE MEMBER MODAL#}
+    <div class="modal fade" id="delete-group" tabindex="-1" role="dialog" aria-labelledby="delete-group-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-group-label">Delete member?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this group?
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="{% url 'delete_group' group.id %}" class="btn btn-primary my-btn">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#GROUP MEMBER MODAL#}
+    <div class="modal fade" id="group-member" tabindex="-1" role="dialog" aria-labelledby="group-member-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="group-member-label">Delete member?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name" value="{{ member.mail }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-title" class="col-form-label">Title:</label>
+                            <input type="text" class="form-control" id="message-title" placeholder="Title...">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text" rows="10"
+                                      placeholder="Message..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                    <a href="" class="btn btn-primary my-btn">Assign</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

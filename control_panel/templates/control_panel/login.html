@@ -2,29 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <link href="../../static/login_style_sheet.css" rel="stylesheet">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <meta name="viewport" content="width = device-width, initial-scale = 1">
+    <title>Fit-studio</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/loginstylesheet.css" %}">
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6 col-md-4 col-md-offset-4">
-                <div class="account-wall">
-                        <img class="profile-img" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120" alt="">
-                        <form class="form-signin" method="post" action="#">
-                            {% csrf_token %}
-                            {{ form }}
-                            <button class="btn btn-md btn-primary btn-block" type="submit">Zaloguj się</button>
-                            <br>
-                            <span class="clearfix"></span>
-                        </form>
-                    <h5 class="text-center"><a href="{% url 'tester_login' %}">Zaloguj się jako tester</a></h5>
+<div class="container">
+    <div class="row" id="first-row">
+        <h1>Fit-studio</h1>
+    </div>
+    <div class="row" id="second-row">
+        <div class="login-border">
+            <form action="#" method="POST">
+                {% csrf_token %}
+                {{ form.email.errors }}
+                {{ form.password.errors }}
+                <div class="form-group form-Wrapper">
+                    {{ form.email }}
                 </div>
-            </div>
+                <div class="form-group form-Wrapper">
+                    {{ form.password }}
+                </div>
+                <div class="buttons">
+                    <a href="{% url 'login_as_anonymous' %}" role="button" class="btn btn-primary my-btn">Sign in as Anonymous</a>
+                    <button type="submit" class="btn btn-primary my-btn">Sign in</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 </body>
 </html>

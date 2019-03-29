@@ -1,0 +1,29 @@
+{% extends 'control_panel/add/member.html' %}
+{% block add_form %}
+    <div class="heading">
+        <h4>Add Activity</h4>
+        <button type="submit" form="activity-add" class="btn btn-sm btn-outline-secondary">save changes</button>
+    </div>
+    <form id="activity-add" method="POST" action="#">
+        {% csrf_token %}
+        {{ form.name.errors }}
+        {{ form.level.errors }}
+        {{ form.description.errors }}
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.name.id_for_label }}" class="col-form-label-sm">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="col fieldWrapper">
+                <label for="{{ form.level.id_for_label }}" class="col-form-label-sm">Level</label>
+                {{ form.level }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col fieldWrapper">
+                <label for="{{ form.description.id_for_label }}" class="col-form-label-sm">Description</label>
+                {{ form.description }}
+            </div>
+        </div>
+    </form>
+{% endblock %}
