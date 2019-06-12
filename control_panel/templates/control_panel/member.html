@@ -71,61 +71,61 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Profile</h4>
-                    <button type="submit" form="mem-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save
-                        changes
+                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-member-btn">
+                        save changes
                     </button>
                 </div>
-                <form id="mem-upd" method="POST" action="{% url 'member' member.id %}">
-                    {% csrf_token %}
-                    {{ member_form.first_name.errors }}
-                    {{ member_form.last_name.errors }}
-                    {{ member_form.status.errors }}
-                    {{ member_form.gender.errors }}
-                    {{ member_form.mail.errors }}
-                    {{ member_form.phone.errors }}
-                    {{ member_form.notes.errors }}
+                <form id="update-member-form" data-member-pk="{{ member.pk }}">
                     <div class="form-row">
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.first_name.id_for_label }}" class="col-form-label-sm">First
+                            <label for="{{ form.first_name.id_for_label }}" class="col-form-label-sm">First
                                 Name</label>
-                            {{ member_form.first_name }}
+                            {{ form.first_name }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                            <label for="{{ form.last_name.id_for_label }}" class="col-form-label-sm">Last
                                 Name</label>
-                            {{ member_form.last_name }}
+                            {{ form.last_name }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.gender.id_for_label }}" class="col-form-label-sm">Gender</label>
-                            {{ member_form.gender }}
+                            <label for="{{ form.gender.id_for_label }}" class="col-form-label-sm">Gender</label>
+                            {{ form.gender }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper" id="bday">
-                            <label for="{{ member_form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
+                            <label for="{{ form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
                                 Day</label>
-                            {{ member_form.birth_date }}
+                            {{ form.birth_date }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.status.id_for_label }}" class="col-form-label-sm">Status</label>
-                            {{ member_form.status }}
+                            <label for="{{ form.status.id_for_label }}" class="col-form-label-sm">Status</label>
+                            {{ form.status }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
-                            {{ member_form.mail }}
+                            <label for="{{ form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
+                            {{ form.mail }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.phone.id_for_label }}" class="col-form-label-sm">Phone
+                            <label for="{{ form.phone.id_for_label }}" class="col-form-label-sm">Phone
                                 number</label>
-                            {{ member_form.phone }}
+                            {{ form.phone }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
-                            <label for="{{ member_form.notes.id_for_label }}" class="col-form-label-sm">Notes</label>
-                            {{ member_form.notes }}
+                            <label for="{{ form.notes.id_for_label }}" class="col-form-label-sm">Notes</label>
+                            {{ form.notes }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                 </form>
@@ -171,7 +171,7 @@
             </div>
         </div>
     </div>
-    {#DELETE MEMBER MODAL#}
+    {#  DELETE MEMBER MODAL  #}
     <div class="modal fade" id="delete-member" tabindex="-1" role="dialog" aria-labelledby="delete-member-label"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -187,7 +187,7 @@
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                    <a href="" class="btn btn-primary my-btn">Delete</a>
+                    <a href="{% url 'delete' 'members' member.pk %}" class="btn btn-primary my-btn">Delete</a>
                 </div>
             </div>
         </div>
@@ -213,7 +213,7 @@
             </div>
         </div>
     </div>
-    {#GROUP MEMBER MODAL#}
+    {#  GROUP MEMBER MODAL  #}
     <div class="modal fade" id="group-member" tabindex="-1" role="dialog" aria-labelledby="group-member-label"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">

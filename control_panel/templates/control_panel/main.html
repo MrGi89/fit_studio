@@ -30,10 +30,10 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-member">Add member</a>
-                            <a class="dropdown-item" href="{% url 'add_trainer' %}">Add trainer</a>
-                            <a class="dropdown-item" href="{% url 'add_product' %}">Add product</a>
-                            <a class="dropdown-item" href="{% url 'add_activity' %}">Add activity</a>
-                            <a class="dropdown-item" href="{% url 'add_group' %}">Add group</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-trainer">Add trainer</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-product">Add product</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-activity">Add activity</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-group">Add group</a>
                         </div>
                     </div>
                 </li>
@@ -160,7 +160,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-secondary mem-next" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary my-btn add-member-btn mem-next">Add</a>
+                <a href="#" class="btn btn-primary my-btn mem-next" id="add-member-btn">Add</a>
                 <a href="{% url 'members' %}" class="btn btn-primary my-btn mem-success">OK</a>
             </div>
         </div>

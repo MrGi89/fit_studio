@@ -27,34 +27,32 @@ urlpatterns = [
     url(r'^login_as_anonymous/$', LoginAsAnonymous.as_view(), name='login_as_anonymous'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^edit_user/(?P<user_id>\d+)/$', UserView.as_view(), name='edit_user'),
-
-    url(r'^members/$', MembersView.as_view(), name='members'),
-    url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
-    url(r'^member/delete/(?P<pk>\d+)/$', DeleteMemberView.as_view(), name='delete_member'),
-
     url(r'^map/$', MapView.as_view(), name='map'),
 
+    # LISTS
+    url(r'^members/$', MembersView.as_view(), name='members'),
     url(r'^trainers/$', TrainersView.as_view(), name='trainers'),
-    url(r'^trainer/(?P<pk>\d+)/$', TrainerView.as_view(), name='trainer'),
-    url(r'^trainer/create/$', CreateTrainerView.as_view(), name='add_trainer'),
-    url(r'^trainer/delete/(?P<pk>\d+)/$', DeleteTrainerView.as_view(), name='delete_trainer'),
-
     url(r'^groups/$', GroupsView.as_view(), name='groups'),
-    url(r'^group/(?P<pk>\d+)/$', GroupView.as_view(), name='group'),
-    url(r'^group/create/$', CreateGroupView.as_view(), name='add_group'),
-    url(r'^group/delete/(?P<pk>\d+)/$', DeleteGroupView.as_view(), name='delete_group'),
-
     url(r'^products/$', ProductsView.as_view(), name='products'),
-    url(r'^product/(?P<pk>\d+)/$', ProductView.as_view(), name='product'),
-    url(r'^product/create/$', CreateProductView.as_view(), name='add_product'),
-    url(r'^product/delete/(?P<pk>\d+)/$', DeleteProductView.as_view(), name='delete_product'),
-
     url(r'^activities/$', ActivitiesView.as_view(), name='activities'),
-    url(r'^activity/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
-    url(r'^activity/create/$', CreateActivityView.as_view(), name='add_activity'),
-    url(r'^activity/delete/(?P<pk>\d+)/$', DeleteActivityView.as_view(), name='delete_activity'),
 
-    url(r'^create/(?P<obj_name>member|trainer|group|product|activity)/$', CreateObjectView.as_view(), name='create'),
+    # SINGLE PAGES
+    url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
+    url(r'^trainer/(?P<pk>\d+)/$', TrainerView.as_view(), name='trainer'),
+    url(r'^group/(?P<pk>\d+)/$', GroupView.as_view(), name='group'),
+    url(r'^product/(?P<pk>\d+)/$', ProductView.as_view(), name='product'),
+    url(r'^activity/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
+
+    # CUD
+    url(r'^create/(?P<obj_name>member|trainer|group|product|activity)/$',
+        view=CreateObjectView.as_view(),
+        name='create'),
+    url(r'^update/(?P<obj_name>member|trainer|group|product|activity)/(?P<pk>\d+)/$',
+        view=UpdateObjectView.as_view(),
+        name='update'),
+    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|activities)/(?P<pk>\d+)/$',
+        view=DeleteObjectView.as_view(),
+        name='delete'),
 
 
 
