@@ -19,13 +19,7 @@ from django.conf.urls import url
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import settings
-from control_panel.views import LoginView, LogoutView, UserView, MembersView, MemberView, \
-    CreateMemberView, DeleteMemberView, TrainersView, CreateTrainerView, \
-    DeleteTrainerView, ProductsView, CreateProductView, DeleteProductView, \
-    CreatePassView, DeletePassView, UpdatePassView, UpdatePassStatusView, AddPassEntryView, DeletePassEntryView, \
-    GroupsView, GroupView, DeleteGroupMemberView, AddGroupMemberView, AddGroupMembersView, CreateGroupView, \
-    DeleteGroupView, ShowPaymentsView, LoginAsAnonymous, MapView, TrainerView, ActivitiesView, ActivityView, \
-    CreateActivityView, DeleteActivityView, ProductView
+from control_panel.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,7 +30,6 @@ urlpatterns = [
 
     url(r'^members/$', MembersView.as_view(), name='members'),
     url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
-    url(r'^member/create/$', CreateMemberView.as_view(), name='add_member'),
     url(r'^member/delete/(?P<pk>\d+)/$', DeleteMemberView.as_view(), name='delete_member'),
 
     url(r'^map/$', MapView.as_view(), name='map'),
@@ -61,6 +54,7 @@ urlpatterns = [
     url(r'^activity/create/$', CreateActivityView.as_view(), name='add_activity'),
     url(r'^activity/delete/(?P<pk>\d+)/$', DeleteActivityView.as_view(), name='delete_activity'),
 
+    url(r'^create/(?P<obj_name>member|trainer|group|product|activity)/$', CreateObjectView.as_view(), name='create'),
 
 
 

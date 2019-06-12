@@ -1,9 +1,10 @@
+import json
 from datetime import timedelta, date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -108,22 +109,19 @@ class MemberView(LoginRequiredMixin, View):
                                'payments_count': payment_count})
 
 
-class CreateMemberView(LoginRequiredMixin, View):
+class CreateObjectView(LoginRequiredMixin, View):
 
-    def get(self, request):
-        form = MemberForm()
-        return render(request,
-                      template_name='control_panel/add/member.html',
-                      context={'form': form})
+    def post(self, request, obj_name):
+        if obj_name == 'member':
+            form = MemberForm(data=request.POST)
+        else:
+            raise Http404
 
-    def post(self, request):
-        form = MemberForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('members'))
-        return render(request,
-                      template_name='control_panel/add/member.html',
-                      context={'form': form})
+            return HttpResponse(json.dumps({'result': True}))
+        form.errors.update({'result': False})
+        return HttpResponse(json.dumps(form.errors))
 
 
 class DeleteMemberView(LoginRequiredMixin, View):

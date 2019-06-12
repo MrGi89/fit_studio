@@ -29,7 +29,7 @@
                             <i class="fas fa-plus-circle" data-toggle="tooltip" data-placement="bottom" title="Add"></i>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="{% url 'add_member' %}">Add member</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-member">Add member</a>
                             <a class="dropdown-item" href="{% url 'add_trainer' %}">Add trainer</a>
                             <a class="dropdown-item" href="{% url 'add_product' %}">Add product</a>
                             <a class="dropdown-item" href="{% url 'add_activity' %}">Add activity</a>
@@ -87,6 +87,87 @@
         <div class="col" id="footer"></div>
     </div>
 </div>
+
+<div class="modal fade" id="add-member" tabindex="-1" role="dialog" aria-labelledby="add-member-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-member-label">Add member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-member-form">
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.first_name.id_for_label }}" class="col-form-label-sm">First
+                                Name</label>
+                            {{ member_form.first_name }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                                Name</label>
+                            {{ member_form.last_name }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.gender.id_for_label }}"
+                                   class="col-form-label-sm">Gender</label>
+                            {{ member_form.gender }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper" id="bday">
+                            <label for="{{ member_form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
+                                Day</label>
+                            {{ member_form.birth_date }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.status.id_for_label }}"
+                                   class="col-form-label-sm">Status</label>
+                            {{ member_form.status }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.mail.id_for_label }}"
+                                   class="col-form-label-sm">E-mail</label>
+                            {{ member_form.mail }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.phone.id_for_label }}" class="col-form-label-sm">Phone
+                                number</label>
+                            {{ member_form.phone }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ member_form.notes.id_for_label }}"
+                                   class="col-form-label-sm">Notes</label>
+                            {{ member_form.notes }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                </form>
+                <p class="mem-success">Member was added correctly</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary mem-next" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary my-btn add-member-btn mem-next">Add</a>
+                <a href="{% url 'members' %}" class="btn btn-primary my-btn mem-success">OK</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script
     src="https://code.jquery.com/jquery-3.3.1.js"
     integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -101,5 +182,6 @@
 <script type="text/javascript" src="{% static "/map.js" %}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap" async defer></script>
 <script type="text/javascript" src="{% static "/app.js" %}"></script>
+<script type="text/javascript" src="{% static "/ajax.js" %}"></script>
 </body>
 </html>

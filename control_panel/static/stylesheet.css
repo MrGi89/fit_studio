@@ -282,7 +282,9 @@ button:focus {
     border-radius: 5px
 }
 
-
+.invalid-input {
+    color: #FF0000;
+}
 
 
 
