@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'control_panel.context_processors.google_api_key',
                 'control_panel.context_processors.forms',
+
             ],
         },
     },

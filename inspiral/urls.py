@@ -18,7 +18,7 @@ from django.urls import path
 from django.conf.urls import url
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from . import settings
+from django.conf import settings
 from control_panel.views import *
 
 urlpatterns = [
@@ -50,7 +50,7 @@ urlpatterns = [
     url(r'^update/(?P<obj_name>member|trainer|group|product|activity)/(?P<pk>\d+)/$',
         view=UpdateObjectView.as_view(),
         name='update'),
-    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|activities)/(?P<pk>\d+)/$',
+    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|activities|stay)/(?P<pk>\d+)/$',
         view=DeleteObjectView.as_view(),
         name='delete'),
 

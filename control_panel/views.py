@@ -3,6 +3,7 @@ from datetime import timedelta, date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -143,16 +144,21 @@ class MembersView(LoginRequiredMixin, View):
 
     def get(self, request):
 
+        page = request.GET.get('page', 1)
         search_query = request.GET.get('search_query')
+
         if search_query:
             members = Member.objects.filter(Q(first_name__icontains=search_query) |
                                             Q(last_name__icontains=search_query) |
                                             Q(mail__icontains=search_query)).order_by('last_name')
         else:
             members = Member.objects.all().order_by('last_name')
+
+        paginator = Paginator(members, 10)
+
         return render(request,
                       template_name='control_panel/members.html',
-                      context={'members': members,
+                      context={'members': paginator.get_page(page),
                                'search_query': search_query})
 
 

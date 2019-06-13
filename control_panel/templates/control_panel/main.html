@@ -29,10 +29,14 @@
                             <i class="fas fa-plus-circle" data-toggle="tooltip" data-placement="bottom" title="Add"></i>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-member">Add member</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-trainer">Add trainer</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-product">Add product</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-activity">Add activity</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-member">Add
+                                member</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-trainer">Add
+                                trainer</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-product">Add
+                                product</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-activity">Add
+                                activity</a>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-group">Add group</a>
                         </div>
                     </div>
@@ -77,6 +81,8 @@
         </div>
         <div class="col">
             <div class="content">
+                <div class="alert alert-success" id="success-alert" style="display: none"></div>
+                <div class="alert alert-danger" id="failure-alert" style="display: none"></div>
                 {% block content %}
                 {% endblock %}
             </div>
@@ -88,7 +94,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="add-member" tabindex="-1" role="dialog" aria-labelledby="add-member-label" aria-hidden="true">
+<div class="modal fade" id="add-member" tabindex="-1" role="dialog" aria-labelledby="add-member-label"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -156,22 +163,19 @@
                         </div>
                     </div>
                 </form>
-                <p class="mem-success">Member was added correctly</p>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-secondary mem-next" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary my-btn mem-next" id="add-member-btn">Add</a>
-                <a href="{% url 'members' %}" class="btn btn-primary my-btn mem-success">OK</a>
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary my-btn" id="add-member-btn" data-dismiss="modal">Add</a>
             </div>
         </div>
     </div>
 </div>
 
 
-<script
-    src="https://code.jquery.com/jquery-3.3.1.js"
-    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>

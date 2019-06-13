@@ -14,4 +14,9 @@ $(function () {
         'showAnim': 'slideDown'
     });
 
+    // shows success alert after member delete
+
+
+
+
 });
