@@ -1,13 +1,17 @@
 {% extends 'control_panel/main.html' %}
 {% block site_name %}MEMBER{% endblock %}
 {% block content %}
-    <div class="profile">
+    <div class="alert alert-warning" id="warning-alert">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <strong>Warning! </strong> The last pass was not paid!
+    </div>
+    <div class="profile" data-member-pk="{{ member.pk }}">
         <div class="first-col">
             <div class="window">
                 <div class="profile-info">
                     <div>
                         <img src="{{ member.img.url }}" alt="..." width="110" height="110">
-                        <h4>{{ member }}</h4>
+                        <h4>{{ member.first_name }} {{ member.last_name }}</h4>
                     </div>
                     <div class="profile-boxes">
                         <div>
@@ -71,11 +75,12 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Profile</h4>
-                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-member-btn">
+                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-member-btn"
+                            style="display: none;">
                         save changes
                     </button>
                 </div>
-                <form id="update-member-form" data-member-pk="{{ member.pk }}">
+                <form id="update-member-form">
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.first_name.id_for_label }}" class="col-form-label-sm">First
@@ -204,8 +209,33 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to add pass?
-                </div>
+                <form id="add-pass-form">
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ pass_form.product.id_for_label }}" class="col-form-label-sm">Product</label>
+                            {{ pass_form.product }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ pass_form.paid.id_for_label }}" class="col-form-label-sm">Paid</label>
+                            {{ pass_form.paid }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row date-picker">
+                        <div class="col fieldWrapper">
+                            <label for="{{ pass_form.start_date.id_for_label }}" class="col-form-label-sm">From</label>
+                            {{ pass_form.start_date }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ pass_form.end_date.id_for_label }}" class="col-form-label-sm">To</label>
+                            {{ pass_form.end_date }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                </form>
+            </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
                     <a href="" class="btn btn-primary my-btn">Add</a>

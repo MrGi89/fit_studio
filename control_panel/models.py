@@ -1,11 +1,25 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.db import models
+from control_panel.widgets import ColorWidget
 
 GENDER = ((1, 'Kobieta'), (2, 'Mężczyzna'))
 TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
 TYPE_OF_EMPLOYMENT = ((1, 'UoP'), (2, 'UoZ'), (3, 'UoD'), (4, 'B2B'))
 TYPE_OF_LEVEL = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
+TYPE_OF_PRODUCT = ((1, 'Karnet'), (2, 'Karta'), (3, 'Wejściówka'))
+TYPE_OF_PARTNER = ((1, 'Multisport'), (2, 'Fit-Profit'), (3, 'OK System'))
+TYPE_OF_ACTIVITIES = ((1, 'Pole Dance'), (2, 'Exotic'), (3, 'Stretching'), (4, 'Jumping'))
 COLORS = ((1, 'green'), (2, 'red'), (3, 'black'), (4, 'yellow'), (5, 'blue'))
+
+
+class ColorField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 10
+        super(ColorField, self).__init__(*args, **kwargs)
+
+    def formfield(self, **kwargs):
+        kwargs['widget'] = ColorWidget
+        return super(ColorField, self).formfield(**kwargs)
 
 
 class Member(models.Model):
@@ -18,9 +32,11 @@ class Member(models.Model):
     status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
     notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='user_img/', default='user_img/default.jpg')
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.first_name.capitalize() + ' ' + self.last_name.capitalize()
+        return self.last_name.capitalize() + ' ' + self.first_name.capitalize()
 
 
 class Trainer(models.Model):
@@ -41,33 +57,48 @@ class Trainer(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=64)
-    validity = models.SmallIntegerField(default=30)
-    available_entries = models.SmallIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.SmallIntegerField(choices=TYPE_OF_PRODUCT)
+    activity = models.ForeignKey('Activity', models.CASCADE, related_name='products')
+    partner_name = models.SmallIntegerField(choices=TYPE_OF_PARTNER, blank=True, null=True)
+    validity = models.IntegerField(blank=True, null=True)
+    available_entries = models.IntegerField(blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    entry_surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    absence_surcharge = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return '{} {}'.format(self.name, self.available_entries)
+
+        if self.type == 2:
+            return '{} {} {}'.format(self.get_type_display(), self.get_partner_name_display(), self.activity)
+        else:
+            return '{} {}'.format(self.get_type_display(), self.activity)
 
 
 class Activity(models.Model):
-    name = models.CharField(max_length=64)
-    level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, default=1)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        initials = [word[0] for word in self.name.split(' ')]
-        return '{}-{}'.format(''.join(initials), self.level)
+        # initials = [word[0] for word in self.get_name_display().split(' ')]
+        # return '{}-{}'.format(''.join(initials), self.level)
+        return self.name
 
 
 class Group(models.Model):
-    color = models.SmallIntegerField(choices=COLORS)
+
+    level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, default=1)
+    color = ColorField()
     max_capacity = models.IntegerField()
     activity = models.ForeignKey(Activity, models.CASCADE, related_name='groups')
     trainer = models.ForeignKey(Trainer, models.SET_NULL, null=True, related_name='groups')
     members = models.ManyToManyField(Member)
     days = models.ManyToManyField('Day')
     class_time = models.TimeField()
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         days = ' - '.join([day.name[:3] for day in self.days.all()])
@@ -80,23 +111,28 @@ class Pass(models.Model):
     paid = models.BooleanField(default=0)
     start_date = models.DateField(default=date.today)
     end_date = models.DateField()
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{} {} - {}'.format(self.product, self.member, self.paid)
 
 
 class Entry(models.Model):
-    date = models.DateField(default=date.today)
     current_pass = models.ForeignKey(Pass, on_delete=models.CASCADE, related_name='entries')
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.date)
+        return '{:%Y-%m-%d %H:%M}'.format(self.created)
 
 
 class Payment(models.Model):
     date = models.DateField()
     current_pass = models.OneToOneField(Pass, on_delete=models.SET_NULL, null=True, blank=True, related_name='payment')
     amount = models.DecimalField(decimal_places=2, max_digits=10)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class Day(models.Model):

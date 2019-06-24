@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.conf.urls import url
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -40,8 +40,6 @@ urlpatterns = [
     url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
     url(r'^trainer/(?P<pk>\d+)/$', TrainerView.as_view(), name='trainer'),
     url(r'^group/(?P<pk>\d+)/$', GroupView.as_view(), name='group'),
-    url(r'^product/(?P<pk>\d+)/$', ProductView.as_view(), name='product'),
-    url(r'^activity/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
 
     # CUD
     url(r'^create/(?P<obj_name>member|trainer|group|product|activity)/$',
@@ -54,29 +52,29 @@ urlpatterns = [
         view=DeleteObjectView.as_view(),
         name='delete'),
 
+    url(r'^calendar/$', CalendarView.as_view(), name='calendar'),
 
 
 
 
 
-    url(r'^group/delete_member/(?P<group_id>\d+)/(?P<member_id>\d+)/(?P<next>\d)/$', DeleteGroupMemberView.as_view(),
-        name='delete_group_member'),
-    url(r'^group/add_member/(?P<group_id>\d+)/(?P<member_id>\d+)/$', AddGroupMemberView.as_view(),
-        name='add_group_member'),
-    url(r'^group/add_members/(?P<group_id>\d+)', AddGroupMembersView.as_view(),
-        name='add_group_members'),
 
-    url(r'^pass/create/(?P<member_id>\d+)/$', CreatePassView.as_view(), name='create_pass'),
-    url(r'^pass/update/(?P<pk>\d+)/$', UpdatePassView.as_view(), name='update_pass'),
-    url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
-    url(r'^pass/update_status/(?P<pk>\d+)/$', UpdatePassStatusView.as_view(), name='update_pass_status'),
-
-    url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
-    url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
-
-    url(r'^show_payments/$', ShowPaymentsView.as_view(), name='show_payments'),
+    # url(r'^group/delete_member/(?P<group_id>\d+)/(?P<member_id>\d+)/(?P<next>\d)/$', DeleteGroupMemberView.as_view(), name='delete_group_member'),
+    # url(r'^group/add_member/(?P<group_id>\d+)/(?P<member_id>\d+)/$', AddGroupMemberView.as_view(), name='add_group_member'),
+    # url(r'^group/add_members/(?P<group_id>\d+)', AddGroupMembersView.as_view(), name='add_group_members'),
+    # url(r'^pass/create/(?P<member_id>\d+)/$', CreatePassView.as_view(), name='create_pass'),
+    # url(r'^pass/update/(?P<pk>\d+)/$', UpdatePassView.as_view(), name='update_pass'),
+    # url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
+    # url(r'^pass/update_status/(?P<pk>\d+)/$', UpdatePassStatusView.as_view(), name='update_pass_status'),
+    # url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
+    # url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
+    # url(r'^show_payments/$', ShowPaymentsView.as_view(), name='show_payments'),
 
 ]
 
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls)), ]

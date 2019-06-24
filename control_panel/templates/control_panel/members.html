@@ -33,17 +33,18 @@
             </thead>
             <tbody>
             {% for member in members %}
-                <tr>{%  if members.number == 1 %}
-                    <th scope="row">{{ forloop.counter }}</th>
+                <tr>
+                    {% if members.number == 1 %}
+                        <th scope="row">{{ forloop.counter }}</th>
                     {% else %}
-                    <th scope="row">{{ forloop.counter | member_index:members.number }}</th>
+                        <th scope="row">{{ forloop.counter | member_index:members.number }}</th>
                     {% endif %}
                     <td>{{ member }}</td>
                     {% if member.phone %}
                         <td>{{ member.phone }}</td>
                     {% else %}
                         <td></td>
-                    {%  endif %}
+                    {% endif %}
                     <td>{{ member.mail }}</td>
                     <td>{{ member.get_status_display }}</td>
                     <td>
@@ -78,7 +79,8 @@
                                 {% for page in members.paginator.page_range %}
                                     {% if members.number == page %}
                                         <li class="page-item active">
-                                            <span class="page-link">{{ page }}</span><span class="sr-only">(current)</span>
+                                            <span class="page-link">{{ page }}</span><span
+                                                class="sr-only">(current)</span>
                                         </li>
                                     {% else %}
 

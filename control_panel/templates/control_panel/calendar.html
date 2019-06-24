@@ -1,0 +1,50 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}CALENDAR{% endblock %}
+{% block content %}
+    <div class="window">
+        <div class="heading">
+            <div>
+                <h3>Products Table</h3>
+                <small>Products found:</small>
+            </div>
+            <div class="search-bar">
+                <button type="submit" form="search-query" class="search-btn">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+                <form id="search-query" method="GET" action="#">
+                    <label>
+                        <input class="form-control" type="text" name="search_query" placeholder="search..." value=""/>
+                    </label>
+                </form>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Monday</th>
+                <th scope="col">Tuesday</th>
+                <th scope="col">Wednesday</th>
+                <th scope="col">Thursday</th>
+                <th scope="col">Friday</th>
+                <th scope="col">Saturday</th>
+                <th scope="col">Sunday</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for hour, days in calendar.items %}
+                <tr>
+                    <th scope="row">{{ hour|date:"H:i" }}</th>
+                    {% for groups in days.values %}
+                        <td>
+                            {% for group in groups %}
+                                <div style="background-color: {{ group.get_color_display }}">{{ group }}</div>
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

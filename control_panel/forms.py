@@ -55,7 +55,7 @@ class GroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for field_name in ['color', 'max_capacity', 'activity', 'trainer', 'days', 'class_time']:
+        for field_name in ['color', 'max_capacity', 'activity', 'trainer', 'days', 'class_time', 'level']:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
         self.fields['days'].widget.attrs.update({'size': 8})
@@ -70,7 +70,8 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for field_name in ['name', 'validity', 'available_entries', 'price']:
+        for field_name in ['type', 'activity', 'partner_name', 'validity', 'available_entries', 'price', 'deposit',
+                           'entry_surcharge', 'absence_surcharge']:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
     class Meta:
@@ -83,20 +84,29 @@ class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for field_name in ['name', 'level', 'description']:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-
-        self.fields['description'].widget.attrs.update({'rows': '4'})
+        self.fields['name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['description'].widget.attrs.update({'rows': '4', 'class': 'form-control'})
 
     class Meta:
         model = Activity
         fields = '__all__'
 
 
+class PassForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        form_control_fields = ['product', 'start_date', 'end_date', 'paid']
+        for field_name in form_control_fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Pass
+        exclude = ('member', 'entries')
 
 
 class GroupAddMembersForm(forms.ModelForm):
-
     class Meta:
         model = Group
         fields = ('members',)
@@ -140,21 +150,6 @@ class EditUserForm(forms.ModelForm):
             user.set_password(new_password)
             user.save()
         return user
-
-
-
-class PassForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        form_control_fields = ['product', 'status', 'start_date']
-        for field_name in form_control_fields:
-            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
-
-    class Meta:
-        model = Pass
-        exclude = ('member', 'end_date', 'entries')
 
 
 class UpdatePassForm(forms.ModelForm):

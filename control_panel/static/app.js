@@ -2,14 +2,16 @@ $(function () {
 
 
     // Handles update member profile btn
-    const updBtn = $('.upd-btn');
-    updBtn.hide();
     $('.profile-details').find('input, select, textarea').change(function () {
-        updBtn.show()
+        $('.upd-btn').show()
     });
 
-    // Handles datepicker
+    // Handles datepicker inputs
     $('#bday').find('input').datepicker({
+        'dateFormat': 'yy-mm-dd',
+        'showAnim': 'slideDown'
+    });
+    $('.date-picker').find('input').datepicker({
         'dateFormat': 'yy-mm-dd',
         'showAnim': 'slideDown'
     });

@@ -166,13 +166,13 @@ class MemberView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         member = get_object_or_404(Member, pk=pk)
-        form = MemberForm(instance=member)
         entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
         payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
         return render(request,
                       template_name='control_panel/member.html',
                       context={'member': member,
-                               'form': form,
+                               'form': MemberForm(instance=member),
+                               'pass_form': PassForm(),
                                'entries_count': entries_count,
                                'payments_count': payment_count})
 
@@ -242,24 +242,22 @@ class ProductsView(LoginRequiredMixin, View):
 
         search_query = request.GET.get('search_query')
         if search_query:
-            products = Product.objects.filter(Q(name__icontains=search_query)).order_by('-price')
+            products = Product.objects.filter(Q(type__icontains=search_query)).order_by('-price')
         else:
             products = Product.objects.all().order_by('-price')
+
+        forms = dict()
+        for product in products:
+            forms[product.pk] = ProductForm(instance=product)
+
+        paginator = Paginator(products, 10)
+        page = request.GET.get('page', 1)
+
         return render(request,
                       template_name='control_panel/products.html',
-                      context={'products': products,
+                      context={'products': paginator.get_page(page),
+                               'forms': forms,
                                'search_query': search_query})
-
-
-class ProductView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        form = ProductForm(instance=product)
-        return render(request,
-                      template_name='control_panel/product.html',
-                      context={'product': product,
-                               'form': form})
 
 
 class ActivitiesView(LoginRequiredMixin, View):
@@ -277,18 +275,6 @@ class ActivitiesView(LoginRequiredMixin, View):
                                'search_query': search_query})
 
 
-class ActivityView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-
-        activity = get_object_or_404(Activity, pk=pk)
-        form = ActivityForm(instance=activity)
-        return render(request,
-                      template_name='control_panel/add/activity.html',
-                      context={'activity': activity,
-                               'form': form})
-
-
 class MapView(LoginRequiredMixin, View):
 
     def get(self, request):
@@ -296,11 +282,25 @@ class MapView(LoginRequiredMixin, View):
                       template_name='control_panel/map.html')
 
 
+class CalendarView(LoginRequiredMixin, View):
 
+    def get(self, request):
 
-
-
-
+        calendar = dict()
+        for hour in sorted(Group.objects.values_list('class_time', flat=True)):
+            calendar[hour] = {'Monday': list(),
+                              'Tuesday': list(),
+                              'Wednesday': list(),
+                              'Thursday': list(),
+                              'Friday': list(),
+                              'Saturday': list(),
+                              'Sunday': list()}
+        for group in Group.objects.prefetch_related('days'):
+            for day in group.days.all():
+                calendar[group.class_time][day.name].append(group)
+        return render(request,
+                      template_name='control_panel/calendar.html',
+                      context={'calendar': calendar})
 
 
 class CreatePassView(LoginRequiredMixin, CreateView):
