@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from control_panel.models import Activity, Group, Member, Product, Pass, Trainer
+from control_panel.models import Activity, Group, Member, Product, Pass, Trainer, Studio
 
 
 class LoginForm(forms.Form):
@@ -58,7 +58,7 @@ class GroupForm(forms.ModelForm):
         for field_name in ['color', 'max_capacity', 'activity', 'trainer', 'days', 'class_time', 'level']:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
-        self.fields['days'].widget.attrs.update({'size': 8})
+        self.fields['days'].widget.attrs.update({'size': 7})
 
     class Meta:
         model = Group
@@ -97,25 +97,21 @@ class PassForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        form_control_fields = ['product', 'start_date', 'end_date', 'paid']
+        form_control_fields = ['product', 'start_date', 'end_date']
         for field_name in form_control_fields:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
+        for product in self.fields['product'].choices.queryset:
+            self.fields['product'].widget.attrs.update({'data-product-{}'.format(product.id): product.price})
+
     class Meta:
         model = Pass
-        exclude = ('member', 'entries')
+        exclude = ('entries',)
 
 
-class GroupAddMembersForm(forms.ModelForm):
-    class Meta:
-        model = Group
-        fields = ('members',)
-        widgets = {'members': forms.CheckboxSelectMultiple, }
-
-
-class EditUserForm(forms.ModelForm):
-    password = forms.CharField(label='Hasło', widget=forms.PasswordInput, required=False)
-    password_confirmation = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput, required=False)
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
+    password_confirmation = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -125,23 +121,16 @@ class EditUserForm(forms.ModelForm):
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
     class Meta:
-        fields = ('first_name', 'last_name', 'email')
         model = User
-        labels = {
-            'first_name': 'Imię',
-            'last_name': 'Nazwisko',
-            'email': 'Adres e-mail',
-        }
+        fields = ('first_name', 'last_name', 'email')
 
     def clean(self):
-        email = self.cleaned_data['email']
-        user = User.objects.filter(email=email)
 
         password = self.cleaned_data['password']
         password_confirmation = self.cleaned_data['password_confirmation']
 
         if password != password_confirmation:
-            self.add_error('password_confirmation', 'Hasła się nie zgadzają')
+            self.add_error('password_confirmation', 'Passwords do not match.')
 
     def save(self, commit=True):
         user = super().save(commit=commit)
@@ -150,6 +139,26 @@ class EditUserForm(forms.ModelForm):
             user.set_password(new_password)
             user.save()
         return user
+
+
+class StudioForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name in ['name', 'company_name', 'street', 'postal_code', 'city', 'nip', 'regon', 'mail', 'phone']:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Studio
+        fields = '__all__'
+
+
+class GroupAddMembersForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ('members',)
+        widgets = {'members': forms.CheckboxSelectMultiple, }
 
 
 class UpdatePassForm(forms.ModelForm):

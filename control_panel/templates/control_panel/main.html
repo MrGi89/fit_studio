@@ -33,11 +33,9 @@
                                 member</a>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-trainer">Add
                                 trainer</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-group">Add group</a>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-product">Add
                                 product</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-activity">Add
-                                activity</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-group">Add group</a>
                         </div>
                     </div>
                 </li>
@@ -58,8 +56,8 @@
                 {#                </li>#}
                 <li>
                     {% if request.user and request.user.pk %}
-                        <a href="{% url 'edit_user' request.user.pk %}">
-                            <i class="fa fa-cogs" data-toggle="tooltip" data-placement="bottom" title="Profile"></i>
+                        <a href="{% url 'settings' request.user.pk %}">
+                            <i class="fa fa-cogs" data-toggle="tooltip" data-placement="bottom" title="Settings"></i>
                         </a>
                     {% endif %}
                 </li>
@@ -77,8 +75,7 @@
             <a href="{% url 'trainers' %}"><i class="fas fa-user-graduate"></i>Trainers</a>
             <a href="{% url 'groups' %}"><i class="fa fa-users"></i>Groups</a>
             <a href="{% url 'products' %}"><i class="fab fa-product-hunt"></i>Products</a>
-            <a href="{% url 'activities' %}"><i class="fas fa-clipboard-list"></i>Activities</a>
-            <a href="{% url 'calendar' %}"><i class="fas fa-clipboard-list"></i>Calendar</a>
+            <a href="{% url 'calendar' %}"><i class="far fa-calendar-alt"></i>Calendar</a>
         </div>
         <div class="col">
             <div class="content">
@@ -94,7 +91,7 @@
         <div class="col" id="footer"></div>
     </div>
 </div>
-
+{# MEMBER MODAL #}
 <div class="modal fade" id="add-member" tabindex="-1" role="dialog" aria-labelledby="add-member-label"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -110,13 +107,13 @@
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ member_form.first_name.id_for_label }}" class="col-form-label-sm">First
-                                Name</label>
+                                Name*</label>
                             {{ member_form.first_name }}
                             <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ member_form.last_name.id_for_label }}" class="col-form-label-sm">Last
-                                Name</label>
+                                Name*</label>
                             {{ member_form.last_name }}
                             <small class="invalid-input"></small>
                         </div>
@@ -128,7 +125,7 @@
                             {{ member_form.gender }}
                             <small class="invalid-input"></small>
                         </div>
-                        <div class="col fieldWrapper" id="bday">
+                        <div class="col fieldWrapper date-picker">
                             <label for="{{ member_form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
                                 Day</label>
                             {{ member_form.birth_date }}
@@ -144,13 +141,13 @@
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ member_form.mail.id_for_label }}"
-                                   class="col-form-label-sm">E-mail</label>
+                                   class="col-form-label-sm">E-mail*</label>
                             {{ member_form.mail }}
                             <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ member_form.phone.id_for_label }}" class="col-form-label-sm">Phone
-                                number</label>
+                                number*</label>
                             {{ member_form.phone }}
                             <small class="invalid-input"></small>
                         </div>
@@ -172,7 +169,245 @@
         </div>
     </div>
 </div>
+{# TRAINER MODAL #}
+<div class="modal fade" id="add-trainer" tabindex="-1" role="dialog" aria-labelledby="add-trainer-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-trainer-label">Add trainer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.first_name.id_for_label }}" class="col-form-label-sm">First
+                                Name</label>
+                            {{ trainer_form.first_name }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                                Name</label>
+                            {{ trainer_form.last_name }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.gender.id_for_label }}"
+                                   class="col-form-label-sm">Gender</label>
+                            {{ trainer_form.gender }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper date-picker">
+                            <label for="{{ trainer_form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
+                                Day</label>
+                            {{ trainer_form.birth_date }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.status.id_for_label }}"
+                                   class="col-form-label-sm">Status</label>
+                            {{ trainer_form.status }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.mail.id_for_label }}"
+                                   class="col-form-label-sm">E-mail</label>
+                            {{ trainer_form.mail }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.phone.id_for_label }}" class="col-form-label-sm">Phone
+                                number</label>
+                            {{ trainer_form.phone }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.hourly_rate.id_for_label }}"
+                                   class="col-form-label-sm">Hourly rate</label>
+                            {{ trainer_form.hourly_rate }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.employment_type.id_for_label }}" class="col-form-label-sm">Employment
+                                type</label>
+                            {{ trainer_form.employment_type }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ trainer_form.notes.id_for_label }}"
+                                   class="col-form-label-sm">Notes</label>
+                            {{ trainer_form.notes }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary my-btn" data-dismiss="modal">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+{# GROUP MODAL #}
+<div class="modal fade" id="add-group" tabindex="-1" role="dialog" aria-labelledby="add-group-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-group-label">Add group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.activity.id_for_label }}"
+                                   class="col-form-label-sm">Activity</label>
+                            {{ group_form.activity }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.trainer.id_for_label }}" class="col-form-label-sm">Trainer</label>
+                            {{ group_form.trainer }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.max_capacity.id_for_label }}"
+                                   class="col-form-label-sm">Size</label>
+                            {{ group_form.max_capacity }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.level.id_for_label }}"
+                                   class="col-form-label-sm">Level</label>
+                            {{ group_form.level }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper" id="bday">
+                            <label for="{{ group_form.color.id_for_label }}" class="col-form-label-sm">Color</label>
+                            {{ group_form.color }}
+                            <small class="invalid-input"></small>
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.class_time.id_for_label }}"
+                                   class="col-form-label-sm">Class time</label>
+                            {{ group_form.class_time }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                    <div class="form-row">
 
+                        <div class="col fieldWrapper">
+                            <label for="{{ group_form.days.id_for_label }}" class="col-form-label-sm">Days</label>
+                            {{ group_form.days }}
+                            <small class="invalid-input"></small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary my-btn" data-dismiss="modal">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+{# PRODUCT MODAL #}
+<div class="modal fade" id="add-product" tabindex="-1" role="dialog" aria-labelledby="add-product-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-product-label">Add product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.type.id_for_label }}" class="col-form-label-sm">Type</label>
+                            {{ product_form.type }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.partner_name.id_for_label }}"
+                                   class="col-form-label-sm">Partner Name</label>
+                            {{ product_form.partner_name }}
+                        </div>
+
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.activity.id_for_label }}"
+                                   class="col-form-label-sm">Activity</label>
+                            {{ product_form.activity }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.validity.id_for_label }}"
+                                   class="col-form-label-sm">Validity</label>
+                            {{ product_form.validity }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.available_entries.id_for_label }}" class="col-form-label-sm">Available
+                                entries</label>
+                            {{ product_form.available_entries }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.price.id_for_label }}"
+                                   class="col-form-label-sm">Price</label>
+                            {{ product_form.price }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.deposit.id_for_label }}"
+                                   class="col-form-label-sm">Deposit</label>
+                            {{ product_form.deposit }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.entry_surcharge.id_for_label }}"
+                                   class="col-form-label-sm">Entry Surcharge</label>
+                            {{ product_form.entry_surcharge }}
+                        </div>
+                        <div class="col fieldWrapper">
+                            <label for="{{ product_form.absence_surcharge.id_for_label }}" class="col-form-label-sm">Absence
+                                Surcharge</label>
+                            {{ product_form.absence_surcharge }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary my-btn" data-dismiss="modal">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.js"
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="

@@ -4,21 +4,13 @@
     <div class="window">
         <div class="heading">
             <div>
-                <h3>Products Table</h3>
-                <small>Products found:</small>
+                <h3>Calendar</h3>
+                <small></small>
             </div>
-            <div class="search-bar">
-                <button type="submit" form="search-query" class="search-btn">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                </button>
-                <form id="search-query" method="GET" action="#">
-                    <label>
-                        <input class="form-control" type="text" name="search_query" placeholder="search..." value=""/>
-                    </label>
-                </form>
+            <div>
             </div>
         </div>
-        <table class="table">
+        <table class="table" id="calendar">
             <thead>
             <tr>
                 <th scope="col">#</th>
@@ -36,9 +28,17 @@
                 <tr>
                     <th scope="row">{{ hour|date:"H:i" }}</th>
                     {% for groups in days.values %}
-                        <td>
+                        <td width="500">
                             {% for group in groups %}
-                                <div style="background-color: {{ group.get_color_display }}">{{ group }}</div>
+                                <a href="{% url 'group' group.pk %}">
+                                    <div style="background-color: {{ group.color }}">
+                                        <small>{{ group.activity }}</small>
+                                        <br>
+                                        <small>{{ group.get_level_display }}</small>
+                                        <br>
+                                        <small>{{ group.trainer }}</small>
+                                    </div>
+                                </a>
                             {% endfor %}
                         </td>
                     {% endfor %}

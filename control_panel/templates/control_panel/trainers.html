@@ -24,9 +24,10 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Number</th>
+                <th scope="col">Phone number</th>
                 <th scope="col">E-mail</th>
                 <th scope="col">Status</th>
+                <th scope="col">Groups</th>
                 <th scope="col" colspan="2">Actions</th>
             </tr>
             </thead>
@@ -38,6 +39,7 @@
                     <td>{{ trainer.phone }}</td>
                     <td>{{ trainer.mail }}</td>
                     <td>{{ trainer.get_status_display }}</td>
+                    <td>{{ trainer.groups.all|length }}</td>
                     <td>
                         <a href="{% url 'trainer' trainer.id %}">
                             <i class="fa fa-info-circle"></i>

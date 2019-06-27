@@ -23,12 +23,13 @@ class ColorField(models.CharField):
 
 
 class Member(models.Model):
+    # TODO make phone, email required
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     birth_date = models.DateField(null=True, blank=True)
     gender = models.SmallIntegerField(choices=GENDER, default=1)
     phone = models.IntegerField(null=True, blank=True)
-    mail = models.EmailField(unique=True)
+    mail = models.EmailField(unique=True, null=True, blank=True)
     status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
     notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='user_img/', default='user_img/default.jpg')
@@ -53,7 +54,7 @@ class Trainer(models.Model):
     employment_type = models.SmallIntegerField(choices=TYPE_OF_EMPLOYMENT, default=1)
 
     def __str__(self):
-        return '{} {}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+        return '{} {}'.format(self.last_name.capitalize(), self.first_name.capitalize())
 
 
 class Product(models.Model):
@@ -82,15 +83,13 @@ class Activity(models.Model):
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        # initials = [word[0] for word in self.get_name_display().split(' ')]
-        # return '{}-{}'.format(''.join(initials), self.level)
         return self.name
 
 
 class Group(models.Model):
 
     level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, default=1)
-    color = ColorField()
+    color = ColorField(unique=True)
     max_capacity = models.IntegerField()
     activity = models.ForeignKey(Activity, models.CASCADE, related_name='groups')
     trainer = models.ForeignKey(Trainer, models.SET_NULL, null=True, related_name='groups')
@@ -140,3 +139,34 @@ class Day(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Studio(models.Model):
+
+    name = models.CharField(max_length=100)
+    company_name = models.CharField(max_length=200, null=True, blank=True)
+    street = models.CharField(max_length=50, null=True, blank=True)
+    postal_code = models.CharField(max_length=6, null=True, blank=True)
+    city = models.CharField(max_length=50, null=True, blank=True)
+    nip = models.PositiveIntegerField(null=True, blank=True)
+    regon = models.PositiveIntegerField(null=True, blank=True)
+    mail = models.EmailField()
+    phone = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

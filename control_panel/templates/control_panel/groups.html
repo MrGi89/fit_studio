@@ -24,6 +24,7 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
+                <th scope="col">Level</th>
                 <th scope="col">Color</th>
                 <th scope="col">Capacity</th>
                 <th scope="col">Activity</th>
@@ -36,7 +37,8 @@
                 <tr>
                     <th scope="row">{{ forloop.counter0 | add:1 }}</th>
                     <td>{{ group }}</td>
-                    <td><div class="group-color" style="background-color: {{ group.get_color_display }};"></div></td>
+                    <td>{{ group.get_level_display }}</td>
+                    <td><div class="group-color" style="background-color: {{ group.color }};"></div></td>
                     <td>{{ group.max_capacity }}</td>
                     <td>{{ group.activity.name }}</td>
                     <td>{{ group.trainer }}</td>

@@ -7,7 +7,7 @@
                 <div class="profile-info">
                     <div>
                         <img src="{{ trainer.img.url }}" alt="..." width="110" height="110">
-                        <h4>{{ trainer }}</h4>
+                        <h4>{{ trainer.first_name }} {{ trainer.last_name }}</h4>
                     </div>
                     <div class="profile-boxes">
                         <div>
@@ -19,7 +19,7 @@
                             <h6>{{ students }}</h6>
                         </div>
                         <div>
-                            <small>Classes a week</small>
+                            <small>Classes per week</small>
                             <h6>{{ week_classes }}</h6>
                         </div>
                     </div>

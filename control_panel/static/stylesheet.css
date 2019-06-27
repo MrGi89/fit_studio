@@ -25,6 +25,10 @@ button:focus {
     outline: 0;
 }
 
+th, td {
+    text-align: center;
+}
+
 .my-btn {
     background-color: #393873;
     border-color: #393873;
@@ -236,7 +240,10 @@ button:focus {
     display: block;
     width: 100%;
 }
+
 .profile-list a {
+    width: 100%;
+    height: 100%;
     color: #000000;
 }
 .profile-list i {
@@ -286,28 +293,35 @@ button:focus {
     color: #FF0000;
 }
 
-/*input[type=checkbox]*/
-/*{*/
-/*  !* Double-sized Checkboxes *!*/
-/*  -ms-transform: scale(1); !* IE *!*/
-/*  -moz-transform: scale(1); !* FF *!*/
-/*  -webkit-transform: scale(1); !* Safari and Chrome *!*/
-/*  -o-transform: scale(1); !* Opera *!*/
-/*  transform: scale(1);*/
-/*}*/
+/*CALENDAR*/
+#calendar {
 
+}
 
+#calendar td{
+    padding: 0;
+}
 
-
-
-
-
-
-
+#calendar div{
+    padding: 2px;
+    margin: 1px;
+    color: black;
+}
 
 #footer {
     border-top: 1px solid #393873;
 }
+
+/*SETTINGS*/
+
+.save-settings {
+    margin-top: 30px;
+    float: right;
+}
+
+
+
+
 
 .save {
     background-color: #E0E2ED;

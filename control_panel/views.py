@@ -9,12 +9,9 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, UpdateView
 
-from .models import Activity, Entry, Group, Member, Pass, Product, Trainer
-from .forms import ActivityForm, LoginForm, EditUserForm, MemberForm, TrainerForm, ProductForm, PassForm, \
-    UpdatePassForm, GroupForm, \
-    GroupAddMembersForm
+from .models import Activity, Entry, Group, Member, Pass, Product, Trainer, Studio
+from .forms import LoginForm, UserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, StudioForm
 
 
 class LoginView(View):
@@ -74,8 +71,8 @@ class CreateObjectView(LoginRequiredMixin, View):
             form = GroupForm(data=request.POST)
         elif obj_name == 'product':
             form = ProductForm(data=request.POST)
-        elif obj_name == 'activity':
-            form = ActivityForm(data=request.POST)
+        elif obj_name == 'pass':
+            form = PassForm(data=request.POST)
         else:
             raise Http404
 
@@ -102,9 +99,15 @@ class UpdateObjectView(LoginRequiredMixin, View):
         elif obj_name == 'product':
             product = get_object_or_404(Product, pk=pk)
             form = ProductForm(instance=product, data=request.POST)
-        elif obj_name == 'activity':
-            activity = get_object_or_404(Activity, pk=pk)
-            form = ActivityForm(instance=activity, data=request.POST)
+        elif obj_name == 'user':
+            user = get_object_or_404(User, pk=pk)
+            form = UserForm(instance=user, data=request.POST)
+        elif obj_name == 'studio':
+            studio = Studio.objects.filter(pk=pk)
+            if studio:
+                form = StudioForm(instance=studio[0], data=request.POST)
+            else:
+                form = StudioForm(data=request.POST)
         else:
             raise Http404
 
@@ -131,12 +134,14 @@ class DeleteObjectView(LoginRequiredMixin, View):
         elif redirect_to == 'products':
             product = get_object_or_404(Product, pk=pk)
             product.delete()
-        elif redirect_to == 'activities':
-            activity = get_object_or_404(Activity, pk=pk)
-            activity.delete()
+        elif redirect_to == 'pass':
+            one_pass = get_object_or_404(Pass, pk=pk)
+            one_pass.delete()
+            return redirect('member', one_pass.member.pk)
         else:
             raise Http404
 
+        # TODO redirect to stay
         return redirect(redirect_to)
 
 
@@ -166,13 +171,26 @@ class MemberView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         member = get_object_or_404(Member, pk=pk)
-        entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
-        payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
+        # entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
+        # payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
+        entries_count = 0
+        payment_count = 0
+
+        passes = member.passes.all().order_by('-start_date')
+        pass_forms = dict()
+        warning = False
+        for one_pass in passes:
+            pass_forms[one_pass.pk] = PassForm(instance=one_pass)
+            if not one_pass.paid:
+                warning = True
         return render(request,
                       template_name='control_panel/member.html',
                       context={'member': member,
+                               'passes': passes,
                                'form': MemberForm(instance=member),
+                               'warning': warning,
                                'pass_form': PassForm(),
+                               'pass_forms': pass_forms,
                                'entries_count': entries_count,
                                'payments_count': payment_count})
 
@@ -303,214 +321,167 @@ class CalendarView(LoginRequiredMixin, View):
                       context={'calendar': calendar})
 
 
-class CreatePassView(LoginRequiredMixin, CreateView):
-
-    def dispatch(self, request, *args, **kwargs):
-        self.member_id = kwargs.pop('member_id')
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        member = Member.objects.get(id=self.member_id)
-        instance.member = member
-        instance.end_date = instance.start_date + timedelta(days=instance.product.validity)
-        instance.save()
-
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        return '/show_member/{}/'.format(self.member_id)
-
-    form_class = PassForm
-    template_name = './control_panel/old/pass/pass_form.html'
-
-
-class UpdatePassView(LoginRequiredMixin, UpdateView):
-    form_class = UpdatePassForm
-    template_name = './control_panel/old/pass/pass_update_form.html'
-    model = Pass
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        self.pass_id = instance.id
-        instance.save()
-
-        return redirect(self.get_success_url(pass_id=self.pass_id))
-
-    def get_success_url(self, **kwargs):
-        member = Pass.objects.get(pk=self.kwargs.get('pk')).member
-        if kwargs is not None:
-            return reverse_lazy('show_member', kwargs={'pk': member.id})
-
-
-class DeletePassView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-
-        current_pass = get_object_or_404(Pass, pk=pk)
-        entries = current_pass.entry_set.all()
-        message = []
-
-        if current_pass.status == 1:
-            message.append('karnet został opłacony')
-        if entries:
-            message.append('karnet został częściowo wykorzystany')
-
-        return render(request, template_name='control_panel/old/pass/pass_confirm_delete.html',
-                      context={'message': message})
-
-    def post(self, request, pk):
-
-        current_pass = get_object_or_404(Pass, pk=pk)
-        user = current_pass.member
-        current_pass.delete()
-        return redirect('/show_member/{}'.format(user.id))
-
-
-class AddPassEntryView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-        user_pass = get_object_or_404(Pass, pk=pk)
-
-        if user_pass.entries == user_pass.product.available_entries:
-            new_pass = Pass.objects.create(member=user_pass.member, product=user_pass.product,
-                                           end_date=date.today() + timedelta(days=user_pass.product.validity))
-            new_pass.entries = new_pass.entries + 1
-            new_pass.save()
-            Entry.objects.create(current_pass=new_pass, date=date.today())
-            return redirect('/show_member/{}'.format(user_pass.member.id))
-
-        if user_pass.entries == 0:
-            user_pass.start_date = date.today()
-            user_pass.end_date = date.today() + timedelta(days=user_pass.product.validity)
-
-        user_pass.entries = user_pass.entries + 1
-        Entry.objects.create(current_pass=user_pass, date=date.today())
-        if user_pass.entries == user_pass.product.available_entries:
-            user_pass.end_date = date.today()
-        user_pass.save()
-
-        return redirect('/show_member/{}'.format(user_pass.member.id))
-
-
-class DeletePassEntryView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-        entry = get_object_or_404(Entry, pk=pk)
-        current_pass = entry.current_pass
-        current_pass.entries = current_pass.entries - 1
-        current_pass.save()
-        entry.delete()
-        return redirect('/show_member/{}'.format(current_pass.member.id))
-
-
-class UpdatePassStatusView(LoginRequiredMixin, View):
-
-    def get(self, request, pk):
-        user_pass = get_object_or_404(Pass, pk=pk)
-        user_pass.member.status = 1
-        user_pass.member.save()
-
-        if user_pass.status == 2:
-            user_pass.status = 1
-        else:
-            user_pass.status = 2
-        user_pass.save()
-        return redirect('/show_member/{}'.format(user_pass.member.id))
-
-
-class DeleteGroupMemberView(LoginRequiredMixin, View):
-
-    def get(self, request, group_id, member_id, next):
-        member = get_object_or_404(Member, id=member_id)
-        group = get_object_or_404(Group, id=group_id)
-        group.members.remove(member)
-        if next == '0':
-            return redirect('show_groups')
-        return redirect('show_member', member.id)
-
-
-class AddGroupMemberView(LoginRequiredMixin, View):
-
-    def get(self, request, group_id, member_id):
-        member = get_object_or_404(Member, id=member_id)
-        group = get_object_or_404(Group, id=group_id)
-        group.members.add(member)
-        return redirect('show_member', member.id)
-
-
-class AddGroupMembersView(LoginRequiredMixin, View):
-
-    def get(self, request, group_id):
-        group = get_object_or_404(Group, id=group_id)
-        form = GroupAddMembersForm(instance=group)
-        return render(request, template_name='control_panel/old/group/add_members_form.html', context={'form': form})
-
-    def post(self, request, group_id):
-        group = get_object_or_404(Group, id=group_id)
-        form = GroupAddMembersForm(request.POST, instance=group)
-        if form.is_valid():
-            form.save()
-            return redirect('show_groups')
-        return render(request, template_name='control_panel/old/group/add_members_form.html', context={'form': form})
-
-
-class ShowPaymentsView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        search = request.GET.get('search')
-        start_time = request.GET.get('start_time')
-        end_time = request.GET.get('end_time')
-        user_status = request.GET.get('user_status')
-        pass_status = request.GET.get('pass_status')
-        passes = Pass.objects.all()
-
-        if start_time:
-            passes = passes.filter(start_date__gte=start_time)
-        if end_time:
-            passes = passes.filter(end_date__lte=end_time)
-        if pass_status:
-            if pass_status == '1':
-                passes = passes.filter(status=1)
-            elif pass_status == '2':
-                passes = passes.filter(status=2)
-
-        if user_status:
-            if user_status == '1':
-                passes = passes.filter(member__status=1)
-            elif user_status == '2':
-                passes = passes.filter(member__status=2)
-
-        if search:
-            passes = passes.filter(Q(member__first_name__icontains=search) | Q(member__last_name__icontains=search))
-
-        return render(request, template_name='control_panel/old/finances/show_payments.html',
-                      context={'passes': passes,
-                               'search': search,
-                               'start_time': start_time,
-                               'end_time': end_time,
-                               'user_status': user_status,
-                               'pass_status': pass_status
-                               })
-
-
-class UserView(LoginRequiredMixin, View):
+class SettingsView(LoginRequiredMixin, View):
 
     def get(self, request, user_id):
         user = User.objects.get(pk=user_id)
-        form = EditUserForm(instance=user)
-        return render(request, template_name='control_panel/user.html', context={'form': form})
+        studio = Studio.objects.filter(pk=1)
+        return render(request,
+                      template_name='control_panel/settings.html',
+                      context={'user_form': UserForm(instance=user),
+                               'studio_form': StudioForm(instance=studio[0]) if studio else StudioForm(),
+
+                               })
 
     def post(self, request, user_id):
         user = User.objects.get(pk=user_id)
-        form = EditUserForm(request.POST, instance=user)
+        form = UserForm(request.POST, instance=user)
         if user.username == 'tester':
             form.add_error('first_name', 'Tester nie może zmienić użytkownika')
-            return render(request, template_name='control_panel/user.html', context={'form': form})
+            return render(request, template_name='control_panel/settings.html', context={'form': form})
 
         if form.is_valid():
             user = form.save()
             login(request, user)
             return HttpResponseRedirect(reverse('home'))
 
-        return render(request, template_name='control_panel/user.html', context={'form': form})
+        return render(request, template_name='control_panel/settings.html', context={'form': form})
+
+
+# class CreatePassView(LoginRequiredMixin, CreateView):
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         self.member_id = kwargs.pop('member_id')
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def form_valid(self, form):
+#         instance = form.save(commit=False)
+#         member = Member.objects.get(id=self.member_id)
+#         instance.member = member
+#         instance.end_date = instance.start_date + timedelta(days=instance.product.validity)
+#         instance.save()
+#
+#         return redirect(self.get_success_url())
+#
+#     def get_success_url(self):
+#         return '/show_member/{}/'.format(self.member_id)
+#
+#     form_class = PassForm
+#     template_name = './control_panel/old/pass/pass_form.html'
+#
+#
+# class UpdatePassView(LoginRequiredMixin, UpdateView):
+#     form_class = UpdatePassForm
+#     template_name = './control_panel/old/pass/pass_update_form.html'
+#     model = Pass
+#
+#     def form_valid(self, form):
+#         instance = form.save(commit=False)
+#         self.pass_id = instance.id
+#         instance.save()
+#
+#         return redirect(self.get_success_url(pass_id=self.pass_id))
+#
+#     def get_success_url(self, **kwargs):
+#         member = Pass.objects.get(pk=self.kwargs.get('pk')).member
+#         if kwargs is not None:
+#             return reverse_lazy('show_member', kwargs={'pk': member.id})
+#
+#
+# class DeletePassView(LoginRequiredMixin, View):
+#
+#     def get(self, request, pk):
+#
+#         current_pass = get_object_or_404(Pass, pk=pk)
+#         entries = current_pass.entry_set.all()
+#         message = []
+#
+#         if current_pass.status == 1:
+#             message.append('karnet został opłacony')
+#         if entries:
+#             message.append('karnet został częściowo wykorzystany')
+#
+#         return render(request, template_name='control_panel/old/pass/pass_confirm_delete.html',
+#                       context={'message': message})
+#
+#     def post(self, request, pk):
+#
+#         current_pass = get_object_or_404(Pass, pk=pk)
+#         user = current_pass.member
+#         current_pass.delete()
+#         return redirect('/show_member/{}'.format(user.id))
+#
+#
+# class AddPassEntryView(LoginRequiredMixin, View):
+#
+#     def get(self, request, pk):
+#         user_pass = get_object_or_404(Pass, pk=pk)
+#
+#         if user_pass.entries == user_pass.product.available_entries:
+#             new_pass = Pass.objects.create(member=user_pass.member, product=user_pass.product,
+#                                            end_date=date.today() + timedelta(days=user_pass.product.validity))
+#             new_pass.entries = new_pass.entries + 1
+#             new_pass.save()
+#             Entry.objects.create(current_pass=new_pass, date=date.today())
+#             return redirect('/show_member/{}'.format(user_pass.member.id))
+#
+#         if user_pass.entries == 0:
+#             user_pass.start_date = date.today()
+#             user_pass.end_date = date.today() + timedelta(days=user_pass.product.validity)
+#
+#         user_pass.entries = user_pass.entries + 1
+#         Entry.objects.create(current_pass=user_pass, date=date.today())
+#         if user_pass.entries == user_pass.product.available_entries:
+#             user_pass.end_date = date.today()
+#         user_pass.save()
+#
+#         return redirect('/show_member/{}'.format(user_pass.member.id))
+#
+#
+# class DeletePassEntryView(LoginRequiredMixin, View):
+#
+#     def get(self, request, pk):
+#         entry = get_object_or_404(Entry, pk=pk)
+#         current_pass = entry.current_pass
+#         current_pass.entries = current_pass.entries - 1
+#         current_pass.save()
+#         entry.delete()
+#         return redirect('/show_member/{}'.format(current_pass.member.id))
+#
+#
+# class UpdatePassStatusView(LoginRequiredMixin, View):
+#
+#     def get(self, request, pk):
+#         user_pass = get_object_or_404(Pass, pk=pk)
+#         user_pass.member.status = 1
+#         user_pass.member.save()
+#
+#         if user_pass.status == 2:
+#             user_pass.status = 1
+#         else:
+#             user_pass.status = 2
+#         user_pass.save()
+#         return redirect('/show_member/{}'.format(user_pass.member.id))
+#
+#
+# class DeleteGroupMemberView(LoginRequiredMixin, View):
+#
+#     def get(self, request, group_id, member_id, next):
+#         member = get_object_or_404(Member, id=member_id)
+#         group = get_object_or_404(Group, id=group_id)
+#         group.members.remove(member)
+#         if next == '0':
+#             return redirect('show_groups')
+#         return redirect('show_member', member.id)
+#
+#
+# class AddGroupMemberView(LoginRequiredMixin, View):
+#
+#     def get(self, request, group_id, member_id):
+#         member = get_object_or_404(Member, id=member_id)
+#         group = get_object_or_404(Group, id=group_id)
+#         group.members.add(member)
+#         return redirect('show_member', member.id)
+
+
+

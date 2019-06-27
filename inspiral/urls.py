@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^$', LoginView.as_view(), name='login'),
     url(r'^login_as_anonymous/$', LoginAsAnonymous.as_view(), name='login_as_anonymous'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
-    url(r'^edit_user/(?P<user_id>\d+)/$', UserView.as_view(), name='edit_user'),
+    url(r'^settings/(?P<user_id>\d+)/$', SettingsView.as_view(), name='settings'),
     url(r'^map/$', MapView.as_view(), name='map'),
 
     # LISTS
@@ -40,35 +40,18 @@ urlpatterns = [
     url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
     url(r'^trainer/(?P<pk>\d+)/$', TrainerView.as_view(), name='trainer'),
     url(r'^group/(?P<pk>\d+)/$', GroupView.as_view(), name='group'),
-
-    # CUD
-    url(r'^create/(?P<obj_name>member|trainer|group|product|activity)/$',
-        view=CreateObjectView.as_view(),
-        name='create'),
-    url(r'^update/(?P<obj_name>member|trainer|group|product|activity)/(?P<pk>\d+)/$',
-        view=UpdateObjectView.as_view(),
-        name='update'),
-    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|activities|stay)/(?P<pk>\d+)/$',
-        view=DeleteObjectView.as_view(),
-        name='delete'),
-
     url(r'^calendar/$', CalendarView.as_view(), name='calendar'),
 
-
-
-
-
-
-    # url(r'^group/delete_member/(?P<group_id>\d+)/(?P<member_id>\d+)/(?P<next>\d)/$', DeleteGroupMemberView.as_view(), name='delete_group_member'),
-    # url(r'^group/add_member/(?P<group_id>\d+)/(?P<member_id>\d+)/$', AddGroupMemberView.as_view(), name='add_group_member'),
-    # url(r'^group/add_members/(?P<group_id>\d+)', AddGroupMembersView.as_view(), name='add_group_members'),
-    # url(r'^pass/create/(?P<member_id>\d+)/$', CreatePassView.as_view(), name='create_pass'),
-    # url(r'^pass/update/(?P<pk>\d+)/$', UpdatePassView.as_view(), name='update_pass'),
-    # url(r'^pass/delete/(?P<pk>\d+)/$', DeletePassView.as_view(), name='delete_pass'),
-    # url(r'^pass/update_status/(?P<pk>\d+)/$', UpdatePassStatusView.as_view(), name='update_pass_status'),
-    # url(r'^pass/add_entry/(?P<pk>\d+)/$', AddPassEntryView.as_view(), name='add_pass_entry'),
-    # url(r'^pass/delete_entry/(?P<pk>\d+)/$', DeletePassEntryView.as_view(), name='delete_pass_entry'),
-    # url(r'^show_payments/$', ShowPaymentsView.as_view(), name='show_payments'),
+    # CUD
+    url(r'^create/(?P<obj_name>member|trainer|group|product|pass)/$',
+        view=CreateObjectView.as_view(),
+        name='create'),
+    url(r'^update/(?P<obj_name>member|trainer|group|product|pass|user|studio)/(?P<pk>\d+)/$',
+        view=UpdateObjectView.as_view(),
+        name='update'),
+    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|pass|stay)/(?P<pk>\d+)/$',
+        view=DeleteObjectView.as_view(),
+        name='delete'),
 
 ]
 

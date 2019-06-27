@@ -1,0 +1,147 @@
+{% extends 'control_panel/main.html' %}
+{% block site_name %}SETTINGS{% endblock %}
+{% block content %}
+    <div class="profile">
+        <div class="first-col">
+            <div class="window" style="min-height: 100%">
+                <div class="heading">
+                    <h4>Categories</h4>
+                </div>
+                <ul class="list-group profile-list nav nav-tabs" role="tablist">
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab">
+                            <i class="fas fa-user"></i>Profile
+                        </a>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center nav-item">
+                        <a class="nav-link" id="studio-tab" data-toggle="tab" href="#studio" role="tab">
+                            <i class="fas fa-home"></i>Studio
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="second-col">
+            <div class="window profile-details tab-content" style="min-height: 100%">
+                {#  PROFILE CARD  #}
+                <div class="tab-pane active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="heading">
+                        <h4>Profile</h4>
+                    </div>
+                    <form id="profile-form" data-user-pk="{{ request.user.pk }}">
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ user_form.first_name.id_for_label }}" class="col-form-label-sm">First Name</label>
+                                {{ user_form.first_name }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ user_form.last_name.id_for_label }}" class="col-form-label-sm">Last
+                                    Name</label>
+                                {{ user_form.last_name }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ user_form.email.id_for_label }}" class="col-form-label-sm">E-mail</label>
+                                {{ user_form.email }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper" id="bday">
+                                <label for="{{ user_form.password.id_for_label }}" class="col-form-label-sm">Password</label>
+                                {{ user_form.password }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ user_form.password_confirmation.id_for_label }}" class="col-form-label-sm">Password Confirmation</label>
+                                {{ user_form.password_confirmation }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="save-settings">
+                        <a href="#" class="btn btn-primary my-btn" id="update-user-btn">Update</a>
+                    </div>
+                </div>
+                {#  STUDIO CARD  #}
+                <div class="tab-pane" id="studio" role="tabpanel" aria-labelledby="studio-tab">
+                    <div class="heading">
+                        <h4>Studio</h4>
+                    </div>
+                    <form id="studio-form">
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.name.id_for_label }}" class="col-form-label-sm">Studio Name</label>
+                                {{ studio_form.name }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.company_name.id_for_label }}" class="col-form-label-sm">Company name</label>
+                                {{ studio_form.company_name }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.street.id_for_label }}" class="col-form-label-sm">Street</label>
+                                {{ studio_form.street }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.postal_code.id_for_label }}" class="col-form-label-sm">Postal code</label>
+                                {{ studio_form.postal_code }}
+                                <small class="invalid-input"></small>
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.city.id_for_label }}" class="col-form-label-sm">City</label>
+                                {{ studio_form.city }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.nip.id_for_label }}" class="col-form-label-sm">NIP</label>
+                                {{ studio_form.nip }}
+                                <small class="invalid-input"></small>
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.regon.id_for_label }}" class="col-form-label-sm">REGON</label>
+                                {{ studio_form.regon }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
+                                {{ studio_form.mail }}
+                                <small class="invalid-input"></small>
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ studio_form.phone.id_for_label }}" class="col-form-label-sm">Phone number</label>
+                                {{ studio_form.phone }}
+                                <small class="invalid-input"></small>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="save-settings">
+                        <a href="#" class="btn btn-primary my-btn" id="update-studio-btn">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

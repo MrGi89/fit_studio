@@ -7,18 +7,25 @@ $(function () {
     });
 
     // Handles datepicker inputs
-    $('#bday').find('input').datepicker({
-        'dateFormat': 'yy-mm-dd',
-        'showAnim': 'slideDown'
-    });
     $('.date-picker').find('input').datepicker({
         'dateFormat': 'yy-mm-dd',
         'showAnim': 'slideDown'
     });
 
-    // shows success alert after member delete
+    // changes price value in pass modal
+    const passForm = $('#add-pass-form');
+    const product = passForm.find("select[name='product']");
+    const price = passForm.find("input[name='price']");
+    product.change(function () {
+        price.val(product.attr(`data-product-${product.find("option:selected").val()}`));
+    });
 
-
-
+    // Handles first-col slide
+    $(window).scroll(function () {
+        $(".side-bar").find('div').stop().animate({
+            "marginTop": ($(window).scrollTop()) + "px",
+            "marginLeft": ($(window).scrollLeft()) + "px"
+        }, "slow");
+    });
 
 });

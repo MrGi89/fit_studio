@@ -1,10 +1,12 @@
 {% extends 'control_panel/main.html' %}
 {% block site_name %}MEMBER{% endblock %}
 {% block content %}
+    {% if warning %}
     <div class="alert alert-warning" id="warning-alert">
         <button type="button" class="close" data-dismiss="alert">x</button>
         <strong>Warning! </strong> The last pass was not paid!
     </div>
+    {% endif %}
     <div class="profile" data-member-pk="{{ member.pk }}">
         <div class="first-col">
             <div class="window">
@@ -101,7 +103,7 @@
                             {{ form.gender }}
                             <small class="invalid-input"></small>
                         </div>
-                        <div class="col fieldWrapper" id="bday">
+                        <div class="col fieldWrapper date-picker">
                             <label for="{{ form.birth_date.id_for_label }}" class="col-form-label-sm">Birth
                                 Day</label>
                             {{ form.birth_date }}
@@ -142,7 +144,7 @@
                             data-target="#add-pass">add pass
                     </button>
                 </div>
-                <table class="table table-striped">
+                <table class="table table-striped" id="pass-table">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -150,21 +152,31 @@
                         <th scope="col">From</th>
                         <th scope="col">To</th>
                         <th scope="col">Entries</th>
+                        <th scope="col">Price</th>
                         <th scope="col">Paid</th>
                         <th scope="col" colspan="2">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for pass in member.passes.all %}
+                    {% for pass in passes %}
                         <tr>
-                            <th scope="row">{{ forloop.counter0 | add:1 }}</th>
+                            <th scope="row">{{ forloop.counter }}</th>
                             <td>{{ pass.product }}</td>
                             <td>{{ pass.start_date | date:"Y-m-d" }}</td>
                             <td>{{ pass.end_date | date:"Y-m-d" }}</td>
+                        {% if pass.product.available_entries %}
                             <td>{{ pass.entries.all.count }}/{{ pass.product.available_entries }}</td>
+                        {% else %}
+                            <td>&infin;</td>
+                        {% endif %}
+                            <td>{{ pass.product.price }}</td>
                             <td>{% if pass.paid %}Opłacony{% else %}Nieopłacony{% endif %}</td>
-                            <td><a href="#"><i class="fa fa-info-circle"></i></a></td>
-                            <td><a href="#"><i class="fas fa-trash-alt"></i></a></td>
+                            <td>
+                                <a href="#" data-toggle="modal" data-target="#update-pass-{{ pass.pk }}">
+                                    <i class="fa fa-info-circle"></i>
+                                </a>
+                            </td>
+                            <td><a href="{% url 'delete' 'pass' pass.pk %}"><i class="fas fa-trash-alt"></i></a></td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -209,73 +221,105 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                <form id="add-pass-form">
-                    <div class="form-row">
-                        <div class="col fieldWrapper">
-                            <label for="{{ pass_form.product.id_for_label }}" class="col-form-label-sm">Product</label>
-                            {{ pass_form.product }}
-                            <small class="invalid-input"></small>
+                    <form id="add-pass-form">
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="{{ pass_form.product.id_for_label }}"
+                                       class="col-form-label-sm">Product</label>
+                                {{ pass_form.product }}
+                                <small class="invalid-input"></small>
+                            </div>
                         </div>
-                        <div class="col fieldWrapper">
-                            <label for="{{ pass_form.paid.id_for_label }}" class="col-form-label-sm">Paid</label>
-                            {{ pass_form.paid }}
-                            <small class="invalid-input"></small>
+                        <div class="form-row date-picker">
+                            <div class="col fieldWrapper">
+                                <label for="{{ pass_form.start_date.id_for_label }}"
+                                       class="col-form-label-sm">From</label>
+                                {{ pass_form.start_date }}
+                                <small class="invalid-input"></small>
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ pass_form.end_date.id_for_label }}" class="col-form-label-sm">To</label>
+                                {{ pass_form.end_date }}
+                                <small class="invalid-input"></small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row date-picker">
-                        <div class="col fieldWrapper">
-                            <label for="{{ pass_form.start_date.id_for_label }}" class="col-form-label-sm">From</label>
-                            {{ pass_form.start_date }}
-                            <small class="invalid-input"></small>
-                        </div>
-                        <div class="col fieldWrapper">
-                            <label for="{{ pass_form.end_date.id_for_label }}" class="col-form-label-sm">To</label>
-                            {{ pass_form.end_date }}
-                            <small class="invalid-input"></small>
-                        </div>
-                    </div>
-                </form>
-            </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                    <a href="" class="btn btn-primary my-btn">Add</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {#  GROUP MEMBER MODAL  #}
-    <div class="modal fade" id="group-member" tabindex="-1" role="dialog" aria-labelledby="group-member-label"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="group-member-label">Delete member?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name" value="{{ member.mail }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-title" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="message-title" placeholder="Title...">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-text" rows="10"
-                                      placeholder="Message..."></textarea>
+                        <div class="form-row">
+                            <div class="col fieldWrapper">
+                                <label for="price" class="col-form-label-sm">Price</label>
+                                <input type="text" name="price" id="price" class="form-control" disabled>
+                            </div>
+                            <div class="col fieldWrapper">
+                                <label for="{{ pass_form.paid.id_for_label }}" class="col-form-label-sm">Paid</label>
+                                <br>
+                                {{ pass_form.paid }}
+                                <small class="invalid-input"></small>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                    <a href="" class="btn btn-primary my-btn">Assign</a>
+                    <a href="{% url 'member' member.pk %}" class="btn btn-primary my-btn" id="add-pass-btn">Add</a>
                 </div>
             </div>
         </div>
     </div>
+    {#  UPDATE PASS MODAL  #}
+    {% for key, form in pass_forms.items %}
+        <div class="modal fade" id="update-pass-{{ key }}" tabindex="-1" role="dialog"
+             aria-labelledby="update-pass-label"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="update-pass-label">Update pass</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="update-pass-form-{{ key }}" data-pass-pk="{{ key }}">
+                            <div class="form-row">
+                                <div class="col fieldWrapper">
+                                    <label for="{{ form.product.id_for_label }}"
+                                           class="col-form-label-sm">Product</label>
+                                    {{ form.product }}
+                                    <small class="invalid-input"></small>
+                                </div>
+                            </div>
+                            <div class="form-row date-picker">
+                                <div class="col fieldWrapper">
+                                    <label for="{{ form.start_date.id_for_label }}"
+                                           class="col-form-label-sm">From</label>
+                                    {{ form.start_date }}
+                                    <small class="invalid-input"></small>
+                                </div>
+                                <div class="col fieldWrapper">
+                                    <label for="{{ form.end_date.id_for_label }}" class="col-form-label-sm">To</label>
+                                    {{ form.end_date }}
+                                    <small class="invalid-input"></small>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col fieldWrapper">
+                                    <label for="price" class="col-form-label-sm">Price</label>
+                                    <input type="text" name="price" id="price" class="form-control" disabled>
+                                </div>
+                                <div class="col fieldWrapper">
+                                    <label for="{{ form.paid.id_for_label }}" class="col-form-label-sm">Paid</label>
+                                    <br>
+                                    {{ form.paid }}
+                                    <small class="invalid-input"></small>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                        <a href="#" class="btn btn-primary my-btn" id="update-pass-btn" data-dismiss="modal">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}

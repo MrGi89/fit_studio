@@ -102,5 +102,5 @@ ENV/
 
 #Pycharm
 .idea*
-media/*
-*local_settings.py
+.media*
+.local_settings.py
