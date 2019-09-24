@@ -256,8 +256,14 @@ th, td {
     color: #272573;
 }
 
+.profile-list li {
+    padding: 5px;
+}
+/*Passes table*/
 
-
+#pass-table td, #pass-table th{
+    padding: 5px;
+}
 
 
 .group-count {

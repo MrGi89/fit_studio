@@ -73,9 +73,9 @@ class Product(models.Model):
     def __str__(self):
 
         if self.type == 2:
-            return '{} {} {}'.format(self.get_type_display(), self.get_partner_name_display(), self.activity)
+            return '{} {} {}'.format(self.get_type_display(), self.get_partner_name_display(), self.activity.name)
         else:
-            return '{} {}'.format(self.get_type_display(), self.activity)
+            return '{} {}'.format(self.get_type_display(), self.activity.name)
 
 
 class Activity(models.Model):
@@ -101,7 +101,7 @@ class Group(models.Model):
 
     def __str__(self):
         days = ' - '.join([day.name[:3] for day in self.days.all()])
-        return '{} {} {}'.format(self.activity, days, self.class_time)
+        return '{} {:%H:%M} {}'.format(days, self.class_time, self.activity.name)
 
 
 class Pass(models.Model):
@@ -113,8 +113,8 @@ class Pass(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return '{} {} - {}'.format(self.product, self.member, self.paid)
+    # def __str__(self):
+    #     return '{} {} - {}'.format(self.product, self.member, self.paid)
 
 
 class Entry(models.Model):

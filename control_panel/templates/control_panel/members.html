@@ -37,7 +37,7 @@
                     {% if members.number == 1 %}
                         <th scope="row">{{ forloop.counter }}</th>
                     {% else %}
-                        <th scope="row">{{ forloop.counter | member_index:members.number }}</th>
+                        <th scope="row">{{ forloop.counter | show_index:members.number }}</th>
                     {% endif %}
                     <td>{{ member }}</td>
                     {% if member.phone %}

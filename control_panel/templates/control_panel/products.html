@@ -40,7 +40,7 @@
                     {% if products.number == 1 %}
                         <th scope="row">{{ forloop.counter }}</th>
                     {% else %}
-                        <th scope="row">{{ forloop.counter | member_index:products.number }}</th>
+                        <th scope="row">{{ forloop.counter | show_index:products.number }}</th>
                     {% endif %}
                     <td>{{ product }}</td>
                     {% if product.available_entries %}

@@ -9,9 +9,12 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Activity, Entry, Group, Member, Pass, Product, Trainer, Studio
+from .models import Entry, Group, Member, Pass, Product, Trainer, Studio
 from .forms import LoginForm, UserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, StudioForm
+
+# TODO search_query for choseField
 
 
 class LoginView(View):
@@ -102,6 +105,9 @@ class UpdateObjectView(LoginRequiredMixin, View):
         elif obj_name == 'user':
             user = get_object_or_404(User, pk=pk)
             form = UserForm(instance=user, data=request.POST)
+            if user.username == 'anonymous':
+                for field_name in form.changed_data:
+                    form.add_error(field_name, 'No permission to change this user\'s data')
         elif obj_name == 'studio':
             studio = Studio.objects.filter(pk=pk)
             if studio:
@@ -141,13 +147,13 @@ class DeleteObjectView(LoginRequiredMixin, View):
         else:
             raise Http404
 
-        # TODO redirect to stay
         return redirect(redirect_to)
 
 
 class MembersView(LoginRequiredMixin, View):
 
     def get(self, request):
+
 
         page = request.GET.get('page', 1)
         search_query = request.GET.get('search_query')
@@ -170,13 +176,19 @@ class MembersView(LoginRequiredMixin, View):
 class MemberView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
-        member = get_object_or_404(Member, pk=pk)
-        # entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all()])
+        try:
+            member = Member.objects.prefetch_related('group_set').get(pk=pk)
+        except ObjectDoesNotExist:
+            raise Http404
+        # member = get_object_or_404(Member, pk=pk)
+
+        # entries_count = sum([one_pass.entries.all().count() for one_pass in member.passes.all().select_related('entries')])
         # payment_count = sum([one_pass.payment.amount for one_pass in member.passes.all()])
         entries_count = 0
         payment_count = 0
+        passes = Pass.objects.select_related('product', 'product__activity').prefetch_related('entries').filter(member=member)
+        groups = member.group_set.prefetch_related('days').select_related('activity').all()
 
-        passes = member.passes.all().order_by('-start_date')
         pass_forms = dict()
         warning = False
         for one_pass in passes:
@@ -187,6 +199,7 @@ class MemberView(LoginRequiredMixin, View):
                       template_name='control_panel/member.html',
                       context={'member': member,
                                'passes': passes,
+                               'groups': groups,
                                'form': MemberForm(instance=member),
                                'warning': warning,
                                'pass_form': PassForm(),
@@ -198,6 +211,8 @@ class MemberView(LoginRequiredMixin, View):
 class TrainersView(LoginRequiredMixin, View):
 
     def get(self, request):
+
+        page = request.GET.get('page', 1)
         search_query = request.GET.get('search_query')
         if search_query:
             trainers = Trainer.objects.filter(Q(first_name__icontains=search_query) |
@@ -205,9 +220,12 @@ class TrainersView(LoginRequiredMixin, View):
                                               Q(mail__icontains=search_query)).order_by('last_name')
         else:
             trainers = Trainer.objects.all().order_by('last_name')
+
+        paginator = Paginator(trainers, 10)
+
         return render(request,
                       template_name='control_panel/trainers.html',
-                      context={'trainers': trainers,
+                      context={'trainers': paginator.get_page(page),
                                'search_query': search_query})
 
 
@@ -231,16 +249,21 @@ class GroupsView(LoginRequiredMixin, View):
 
     def get(self, request):
 
+        page = request.GET.get('page', 1)
         search_query = request.GET.get('search_query')
         if search_query:
             groups = Group.objects.filter(Q(activity__name__icontains=search_query) |
                                           Q(trainer__first_name__icontains=search_query) |
-                                          Q(trainer__last_name__icontains=search_query))
+                                          Q(trainer__last_name__icontains=search_query)).order_by('activity__name', 'level')
         else:
-            groups = Group.objects.all()
+            groups = Group.objects.all().order_by('activity__name', 'level')
+
+        paginator = Paginator(groups, 10)
+
         return render(request,
                       template_name='control_panel/groups.html',
-                      context={'groups': groups})
+                      context={'groups': paginator.get_page(page),
+                               'search_query': search_query})
 
 
 class GroupView(LoginRequiredMixin, View):
@@ -275,21 +298,6 @@ class ProductsView(LoginRequiredMixin, View):
                       template_name='control_panel/products.html',
                       context={'products': paginator.get_page(page),
                                'forms': forms,
-                               'search_query': search_query})
-
-
-class ActivitiesView(LoginRequiredMixin, View):
-
-    def get(self, request):
-
-        search_query = request.GET.get('search_query')
-        if search_query:
-            activities = Activity.objects.filter(Q(name__icontains=search_query)).order_by('name')
-        else:
-            activities = Activity.objects.all().order_by('name')
-        return render(request,
-                      template_name='control_panel/activities.html',
-                      context={'activities': activities,
                                'search_query': search_query})
 
 
@@ -482,6 +490,3 @@ class SettingsView(LoginRequiredMixin, View):
 #         group = get_object_or_404(Group, id=group_id)
 #         group.members.add(member)
 #         return redirect('show_member', member.id)
-
-
-

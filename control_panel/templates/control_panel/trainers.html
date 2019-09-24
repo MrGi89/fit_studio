@@ -1,11 +1,12 @@
 {% extends 'control_panel/main.html' %}
+{% load tools %}
 {% block site_name %}TRAINERS{% endblock %}
 {% block content %}
     <div class="window">
         <div class="heading">
             <div>
                 <h3>Trainers Table</h3>
-                <small>Shows all trainers</small>
+                <small>Trainers found: {{ trainers.paginator.count }}</small>
             </div>
             <div class="search-bar">
                 <button type="submit" form="search-query" class="search-btn">
@@ -14,7 +15,7 @@
                 <form id="search-query" method="GET" action="#">
                     <label>
                         <input class="form-control" type="text" name="search_query" placeholder="search..."
-                            {% if search_query %} value="{{ search_query }}"{% endif %}/>
+                                {% if search_query %} value="{{ search_query }}"{% endif %}/>
                     </label>
                 </form>
             </div>
@@ -23,7 +24,7 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Name</th>
+                <th scope="col">Full name</th>
                 <th scope="col">Phone number</th>
                 <th scope="col">E-mail</th>
                 <th scope="col">Status</th>
@@ -34,7 +35,11 @@
             <tbody>
             {% for trainer in trainers %}
                 <tr>
-                    <th scope="row">{{ forloop.counter0 | add:1 }}</th>
+                    {% if trainers.number == 1 %}
+                        <th scope="row">{{ forloop.counter }}</th>
+                    {% else %}
+                        <th scope="row">{{ forloop.counter | show_index:trainers.number }}</th>
+                    {% endif %}
                     <td>{{ trainer }}</td>
                     <td>{{ trainer.phone }}</td>
                     <td>{{ trainer.mail }}</td>
@@ -53,6 +58,55 @@
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+            <tr>
+                <th scope="row" colspan="7">
+                    {% if trainers.has_other_pages %}
+                        <nav aria-label="navigation" class="mt-2">
+                            <ul class="pagination justify-content-center">
+                                {% if trainers.has_previous %}
+                                    <li class="page-item">
+                                        <a href="?page={{ trainers.previous_page_number }}{{ get_variables }}"
+                                           class="page-link previous">&lt;</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link previous">&lt;</span>
+                                    </li>
+                                {% endif %}
+                                {% for page in trainers.paginator.page_range %}
+                                    {% if trainers.number == page %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page }}</span><span
+                                                class="sr-only">(current)</span>
+                                        </li>
+                                    {% else %}
+
+                                        {% if page <= trainers.number|add:5 and page >= trainers.number|add:-5 %}
+
+                                            <li class="page-item">
+                                                <a href="?page={{ forloop.counter }}{{ get_variables }}"
+                                                   class="page-link">{{ forloop.counter }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if trainers.has_next %}
+                                    <li class="page-item">
+                                        <a href="?page={{ trainers.next_page_number }}{{ get_variables }}"
+                                           class="page-link next">&gt;</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link next">&gt;</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </th>
+            </tr>
+            </tfoot>
         </table>
     </div>
     {% for trainer in trainers %}

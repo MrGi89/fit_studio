@@ -1,11 +1,12 @@
 {% extends 'control_panel/main.html' %}
+{% load tools %}
 {% block site_name %}GROUPS{% endblock %}
 {% block content %}
     <div class="window">
         <div class="heading">
             <div>
                 <h3>Groups Table</h3>
-                <small>Shows all groups</small>
+                <small>Groups found: {{ groups.paginator.count }}</small>
             </div>
             <div class="search-bar">
                 <button type="submit" form="search-query" class="search-btn">
@@ -14,7 +15,7 @@
                 <form id="search-query" method="GET" action="#">
                     <label>
                         <input class="form-control" type="text" name="search_query" placeholder="search..."
-                            {% if search_query %} value="{{ search_query }}"{% endif %}/>
+                                {% if search_query %} value="{{ search_query }}"{% endif %}/>
                     </label>
                 </form>
             </div>
@@ -35,10 +36,16 @@
             <tbody>
             {% for group in groups %}
                 <tr>
-                    <th scope="row">{{ forloop.counter0 | add:1 }}</th>
+                    {% if groups.number == 1 %}
+                        <th scope="row">{{ forloop.counter }}</th>
+                    {% else %}
+                        <th scope="row">{{ forloop.counter | show_index:groups.number }}</th>
+                    {% endif %}
                     <td>{{ group }}</td>
                     <td>{{ group.get_level_display }}</td>
-                    <td><div class="group-color" style="background-color: {{ group.color }};"></div></td>
+                    <td>
+                        <div class="group-color" style="background-color: {{ group.color }};"></div>
+                    </td>
                     <td>{{ group.max_capacity }}</td>
                     <td>{{ group.activity.name }}</td>
                     <td>{{ group.trainer }}</td>
@@ -55,6 +62,55 @@
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+            <tr>
+                <th scope="row" colspan="7">
+                    {% if groups.has_other_pages %}
+                        <nav aria-label="navigation" class="mt-2">
+                            <ul class="pagination justify-content-center">
+                                {% if groups.has_previous %}
+                                    <li class="page-item">
+                                        <a href="?page={{ groups.previous_page_number }}{{ get_variables }}"
+                                           class="page-link previous">&lt;</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link previous">&lt;</span>
+                                    </li>
+                                {% endif %}
+                                {% for page in groups.paginator.page_range %}
+                                    {% if groups.number == page %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page }}</span><span
+                                                class="sr-only">(current)</span>
+                                        </li>
+                                    {% else %}
+
+                                        {% if page <= groups.number|add:5 and page >= groups.number|add:-5 %}
+
+                                            <li class="page-item">
+                                                <a href="?page={{ forloop.counter }}{{ get_variables }}"
+                                                   class="page-link">{{ forloop.counter }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if groups.has_next %}
+                                    <li class="page-item">
+                                        <a href="?page={{ groups.next_page_number }}{{ get_variables }}"
+                                           class="page-link next">&gt;</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link next">&gt;</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </th>
+            </tr>
+            </tfoot>
         </table>
     </div>
     {% for group in groups %}

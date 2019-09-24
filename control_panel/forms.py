@@ -5,8 +5,8 @@ from control_panel.models import Activity, Group, Member, Product, Pass, Trainer
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(label='')
-    password = forms.CharField(label='', widget=forms.PasswordInput)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
 
     email.widget.attrs.update({'class': 'form-control',
                                'placeholder': 'Email',

@@ -2,10 +2,10 @@
 {% block site_name %}MEMBER{% endblock %}
 {% block content %}
     {% if warning %}
-    <div class="alert alert-warning" id="warning-alert">
-        <button type="button" class="close" data-dismiss="alert">x</button>
-        <strong>Warning! </strong> The last pass was not paid!
-    </div>
+        <div class="alert alert-warning" id="warning-alert">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <strong>Warning! </strong> One of the passes wasn't paid!
+        </div>
     {% endif %}
     <div class="profile" data-member-pk="{{ member.pk }}">
         <div class="first-col">
@@ -18,7 +18,7 @@
                     <div class="profile-boxes">
                         <div>
                             <small>Passes</small>
-                            <h6>{{ member.passes.all.count }}</h6>
+                            <h6>{{ passes | length }}</h6>
                         </div>
                         <div>
                             <small>Entries</small>
@@ -60,10 +60,10 @@
                     <h4>Groups</h4>
                 </div>
                 <ul class="list-group profile-list">
-                    {% for group in member.group_set.all %}
+                    {% for group in groups %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="{% url 'group' group.pk %}"><i class="fas fa-users"></i>{{ group }}</a>
-                            <span class="badge badge-primary badge-pill group-count">{{ group.members.count }}</span>
+                            <span class="badge badge-primary badge-pill group-count">{{ group.members | length }}</span>
                         </li>
                     {% empty %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -164,11 +164,11 @@
                             <td>{{ pass.product }}</td>
                             <td>{{ pass.start_date | date:"Y-m-d" }}</td>
                             <td>{{ pass.end_date | date:"Y-m-d" }}</td>
-                        {% if pass.product.available_entries %}
-                            <td>{{ pass.entries.all.count }}/{{ pass.product.available_entries }}</td>
-                        {% else %}
-                            <td>&infin;</td>
-                        {% endif %}
+                            {% if pass.product.available_entries %}
+                                <td>{{ pass.entries.all.count }}/{{ pass.product.available_entries }}</td>
+                            {% else %}
+                                <td>&infin;</td>
+                            {% endif %}
                             <td>{{ pass.product.price }}</td>
                             <td>{% if pass.paid %}Opłacony{% else %}Nieopłacony{% endif %}</td>
                             <td>
@@ -176,7 +176,11 @@
                                     <i class="fa fa-info-circle"></i>
                                 </a>
                             </td>
-                            <td><a href="{% url 'delete' 'pass' pass.pk %}"><i class="fas fa-trash-alt"></i></a></td>
+                            <td>
+                                <a href="#" data-toggle="modal" data-target="#delete-pass-{{ pass.pk }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -317,6 +321,31 @@
                     <div class="modal-footer">
                         <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
                         <a href="#" class="btn btn-primary my-btn" id="update-pass-btn" data-dismiss="modal">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {#  DELETE PASS MODAL  #}
+    {% for pass in passes %}
+        <div class="modal fade" id="delete-pass-{{ pass.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="delete-pass-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="delete-pass-label">Delete pass?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this pass?<br>
+                        {{ pass.product }}<br>
+                        {{ pass.start_date | date:"Y-m-d" }} - {{ pass.end_date | date:"Y-m-d" }}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                        <a href="{% url 'delete' 'pass' pass.pk %}" class="btn btn-primary my-btn">Delete</a>
                     </div>
                 </div>
             </div>

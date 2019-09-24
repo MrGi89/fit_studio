@@ -21,11 +21,11 @@ $(function () {
     });
 
     // Handles first-col slide
-    $(window).scroll(function () {
-        $(".side-bar").find('div').stop().animate({
-            "marginTop": ($(window).scrollTop()) + "px",
-            "marginLeft": ($(window).scrollLeft()) + "px"
-        }, "slow");
-    });
+    // $(window).scroll(function () {
+    //     $(".side-bar").stop().animate({
+    //         "marginTop": ($(window).scrollTop()) + "px",
+    //         "marginLeft": ($(window).scrollLeft()) + "px"
+    //     }, "slow");
+    // });
 
 });

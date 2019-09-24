@@ -34,7 +34,6 @@ urlpatterns = [
     url(r'^trainers/$', TrainersView.as_view(), name='trainers'),
     url(r'^groups/$', GroupsView.as_view(), name='groups'),
     url(r'^products/$', ProductsView.as_view(), name='products'),
-    url(r'^activities/$', ActivitiesView.as_view(), name='activities'),
 
     # SINGLE PAGES
     url(r'^member/(?P<pk>\d+)/$', MemberView.as_view(), name='member'),
@@ -49,7 +48,7 @@ urlpatterns = [
     url(r'^update/(?P<obj_name>member|trainer|group|product|pass|user|studio)/(?P<pk>\d+)/$',
         view=UpdateObjectView.as_view(),
         name='update'),
-    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|pass|stay)/(?P<pk>\d+)/$',
+    url(r'^delete/(?P<redirect_to>members|trainers|groups|products|pass)/(?P<pk>\d+)/$',
         view=DeleteObjectView.as_view(),
         name='delete'),
 
