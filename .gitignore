@@ -81,7 +81,7 @@ celerybeat-schedule
 
 # dotenv
 .env
-
+.env_prod
 # virtualenv
 .venv
 venv/
@@ -103,4 +103,3 @@ ENV/
 #Pycharm
 .idea*
 .media*
-.local_settings.py
