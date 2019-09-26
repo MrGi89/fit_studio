@@ -86,14 +86,6 @@ WSGI_APPLICATION = 'inspiral.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': config('DB_NAME'),
-    #     'USER': config('DB_USER'),
-    #     'PASSWORD': config('DB_PSWD'),
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '5432',
-    # },
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
     )

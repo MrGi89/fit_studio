@@ -41,7 +41,7 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: `http://127.0.0.1:8000/update/member/${$('.profile').attr('data-member-pk')}/`,
+            url: `/update/member/${$('.profile').attr('data-member-pk')}/`,
             data: formData,
             dataType: 'json'
         }).done(function (response) {
@@ -98,7 +98,7 @@ $(function () {
         };
         $.ajax({
             type: 'POST',
-            url: 'http://127.0.0.1:8000/create/member/',
+            url: '/create/member/',
             data: formData,
             dataType: 'json',
             async: false
@@ -175,7 +175,7 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: `http://127.0.0.1:8000/update/product/${product_pk}/`,
+            url: `/update/product/${product_pk}/`,
             data: formData,
             dataType: 'json',
         }).done(function (response) {
@@ -246,7 +246,7 @@ $(function () {
         };
         $.ajax({
             type: 'POST',
-            url: 'http://127.0.0.1:8000/create/pass/',
+            url: '/create/pass/',
             data: formData,
             dataType: 'json',
             async: false
@@ -322,7 +322,7 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: `http://127.0.0.1:8000/update/user/${form.attr('data-user-pk')}/`,
+            url: `/update/user/${form.attr('data-user-pk')}/`,
             data: formData,
             dataType: 'json'
         }).done(function (response) {
@@ -380,7 +380,7 @@ $('#update-studio-btn').click(updateStudio);
 
         $.ajax({
             type: 'POST',
-            url: `http://127.0.0.1:8000/update/studio/1/`,
+            url: `/update/studio/1/`,
             data: formData,
             dataType: 'json'
         }).done(function (response) {
