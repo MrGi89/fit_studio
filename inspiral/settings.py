@@ -30,7 +30,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 GOOGLE_API_KEY = config('GOOGLE_API_KEY', cast=str)
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'fitstudio.heroku.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '.heroku.com']
 
 # Application definition
 
