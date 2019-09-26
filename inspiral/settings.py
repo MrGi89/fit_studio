@@ -14,6 +14,7 @@ import os
 import dj_database_url
 from decouple import config, Csv
 from django.core.wsgi import get_wsgi_application
+import django_heroku
 from whitenoise.django import DjangoWhiteNoise
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -30,7 +31,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 GOOGLE_API_KEY = config('GOOGLE_API_KEY', cast=str)
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'fitstudio.heroku.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '.heroku.com']
 
 # Application definition
 
@@ -154,3 +155,5 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'control_panel/media')
 MEDIA_URL = '/media/'
+
+django_heroku.settings(locals())
