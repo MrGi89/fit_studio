@@ -71,67 +71,71 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Profile</h4>
-                    <button type="submit" form="trainer-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save changes</button>
+                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-trainer-btn" data-pk="{{ trainer.pk }}"
+                            style="display: none;">
+                        save changes
+                    </button>
                 </div>
-                <form id="trainer-upd" method="POST" action="{% url 'trainer' trainer.id %}">
+                <form id="update-trainer-form">
                 {% csrf_token %}
-                    {{ form.first_name.errors }}
-                    {{ form.last_name.errors }}
-                    {{ form.status.errors }}
-                    {{ form.gender.errors }}
-                    {{ form.mail.errors }}
-                    {{ form.phone.errors }}
-                    {{ form.notes.errors }}
-                    {{ form.hourly_rate.errors }}
-                    {{ form.employment_type.errors }}
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.first_name.id_for_label }}" class="col-form-label-sm">First Name</label>
                             {{ form.first_name }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.last_name.id_for_label }}" class="col-form-label-sm">Last Name</label>
                             {{ form.last_name }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.gender.id_for_label }}" class="col-form-label-sm">Gender</label>
                             {{ form.gender }}
+                            <small class="invalid-input"></small>
                         </div>
-                        <div class="col fieldWrapper" id="bday">
+                        <div class="col fieldWrapper date-picker">
                             <label for="{{ form.birth_date.id_for_label }}" class="col-form-label-sm">Birth Day</label>
                             {{ form.birth_date }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.status.id_for_label }}" class="col-form-label-sm">Status</label>
                             {{ form.status }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.mail.id_for_label }}" class="col-form-label-sm">E-mail</label>
                             {{ form.mail }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.phone.id_for_label }}" class="col-form-label-sm">Phone number</label>
                             {{ form.phone }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.hourly_rate.id_for_label }}" class="col-form-label-sm">Hourly rate</label>
                             {{ form.hourly_rate }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.employment_type.id_for_label }}" class="col-form-label-sm">Employment type</label>
                             {{ form.employment_type }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.notes.id_for_label }}" class="col-form-label-sm">Notes</label>
                             {{ form.notes }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                 </form>

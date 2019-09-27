@@ -81,6 +81,7 @@
             <div class="content">
                 <div class="alert alert-success" id="success-alert" style="display: none"></div>
                 <div class="alert alert-danger" id="failure-alert" style="display: none"></div>
+                <div class="alert alert-warning" id="warning-alert" style="display: none"></div>
                 {% block content %}
                 {% endblock %}
             </div>
@@ -181,7 +182,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="add-trainer-form">
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ trainer_form.first_name.id_for_label }}" class="col-form-label-sm">First
@@ -256,7 +257,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary my-btn" data-dismiss="modal">Add</a>
+                <a href="#" class="btn btn-primary my-btn" id="add-trainer-btn" data-dismiss="modal">Add</a>
             </div>
         </div>
     </div>
@@ -273,7 +274,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="add-group-form">
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ group_form.activity.id_for_label }}"
@@ -326,7 +327,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary my-btn" data-dismiss="modal">Add</a>
+                <a href="#" class="btn btn-primary my-btn" id="add-group-btn" data-dismiss="modal">Add</a>
             </div>
         </div>
     </div>

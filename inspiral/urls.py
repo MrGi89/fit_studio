@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^settings/(?P<user_id>\d+)/$', SettingsView.as_view(), name='settings'),
     url(r'^map/$', MapView.as_view(), name='map'),
+    url(r'^studio-location/$', GetLocationView.as_view(), name='location'),
 
     # LISTS
     url(r'^members/$', MembersView.as_view(), name='members'),

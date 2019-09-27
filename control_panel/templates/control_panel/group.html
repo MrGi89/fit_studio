@@ -48,25 +48,23 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Details</h4>
-                    <button type="submit" form="group-upd" id='upd-btn' class="btn btn-sm btn-outline-secondary">save changes
+                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-group-btn"
+                            data-pk="{{ group.pk }}" style="display: none;">
+                        save changes
                     </button>
                 </div>
-                <form id="group-upd" method="POST" action="#">
+                <form id="update-group-form">
                     {% csrf_token %}
-                    {{ form.color.errors }}
-                    {{ form.max_capacity.errors }}
-                    {{ form.activity.errors }}
-                    {{ form.trainer.errors }}
-                    {{ form.days.errors }}
-                    {{ form.class_time.errors }}
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.activity.id_for_label }}" class="col-form-label-sm">Activity</label>
                             {{ form.activity }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.trainer.id_for_label }}" class="col-form-label-sm">Trainer</label>
                             {{ form.trainer }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
@@ -74,22 +72,26 @@
                             <label for="{{ form.max_capacity.id_for_label }}" class="col-form-label-sm">Max
                                 capacity</label>
                             {{ form.max_capacity }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.color.id_for_label }}"
                                    class="col-form-label-sm">Color</label>
                             {{ form.color }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col fieldWrapper">
                             <label for="{{ form.days.id_for_label }}" class="col-form-label-sm">Days</label>
                             {{ form.days }}
+                            <small class="invalid-input"></small>
                         </div>
                         <div class="col fieldWrapper">
                             <label for="{{ form.class_time.id_for_label }}" class="col-form-label-sm">Class
                                 time</label>
                             {{ form.class_time }}
+                            <small class="invalid-input"></small>
                         </div>
                     </div>
                 </form>

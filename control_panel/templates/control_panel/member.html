@@ -2,12 +2,12 @@
 {% block site_name %}MEMBER{% endblock %}
 {% block content %}
     {% if warning %}
-        <div class="alert alert-warning" id="warning-alert">
+        <div class="alert alert-warning">
             <button type="button" class="close" data-dismiss="alert">x</button>
             <strong>Warning! </strong> One of the passes wasn't paid!
         </div>
     {% endif %}
-    <div class="profile" data-member-pk="{{ member.pk }}">
+    <div class="profile">
         <div class="first-col">
             <div class="window">
                 <div class="profile-info">
@@ -77,7 +77,7 @@
             <div class="window profile-details">
                 <div class="heading">
                     <h4>Profile</h4>
-                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-member-btn"
+                    <button class="btn btn-sm btn-outline-secondary upd-btn" id="update-member-btn" data-pk="{{ member.pk }}"
                             style="display: none;">
                         save changes
                     </button>

@@ -43,7 +43,7 @@ class TrainerForm(forms.ModelForm):
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
         self.fields['notes'].widget.attrs.update({'rows': '4'})
-        self.fields['birth_date'].widget.attrs.update({'autocomplete': 'off'})
+        self.fields['birth_date'].widget.attrs.update({'autocomplete': 'off', 'id': 'trainer_id'})
 
     class Meta:
         model = Trainer

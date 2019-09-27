@@ -16,14 +16,81 @@ $(function () {
         return cookieValue;
     }
 
-
     // Handles update Member ajax call from main modal
 
-    $('#add-member-btn').click(addMember);
-    $('#update-member-btn').click(updateMember);
     const successAlert = $("#success-alert");
     const failureAlert = $("#failure-alert");
+    const warningAlert = $("#warning-alert");
 
+    $('#add-member-btn').click(addMember);
+    function addMember() {
+
+        let result = false;
+        const form = $('#add-member-form');
+        const inputs = form.find('input, select, textarea');
+        inputs.css('border-color', '#CED4DA');
+        $('.invalid-input').hide();
+        const formData = {
+            'csrfmiddlewaretoken': getCookie('csrftoken'),
+            'first_name': form.find("input[name='first_name']").val(),
+            'last_name': form.find("input[name='last_name']").val(),
+            'gender': form.find("select[name='gender'] option:selected").val(),
+            'birth_date': form.find("input[name='birth_date']").val(),
+            'status': form.find("select[name='status']  option:selected").val(),
+            'mail': form.find("input[name='mail']").val(),
+            'phone': form.find("input[name='phone']").val(),
+            'notes': form.find("textarea[name='notes']").val(),
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/create/member/',
+            data: formData,
+            dataType: 'json',
+            async: false
+        }).done(function (response) {
+            // validation passed
+            if (response.result) {
+                form.trigger('reset');
+                result = true;
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Member has been successfully added');
+                successAlert.fadeTo(2000, 500).slideUp(500, function () {
+                    successAlert.slideUp(500);
+                });
+                if ($('#category').text() === 'MEMBERS') {
+                    warningAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Warning! </strong>Refresh page to view added member');
+                    warningAlert.fadeTo(2000, 500)
+                }
+
+
+                // validation not passed
+            } else {
+                delete response['result'];
+                form.find('input, select, textarea').css('border-color', '#00b000');
+                $('.invalid-input').hide();
+                $.each(response, function (key, value) {
+                    const input = form.find(`[name='${key}']`);
+                    if ($.inArray(input.attr('name'), ['gender', 'status']) === 0) {
+                        input.parent().next().text(value);
+                        input.parent().css('border-color', '#FF0000');
+                        input.parent().next().show();
+                    } else {
+                        input.next().text(value);
+                        input.css('border-color', '#FF0000');
+                        input.next().show();
+                    }
+                });
+            }
+        }).fail(function () {
+            result = true;
+            failureAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Failure! </strong>There was a problem with your request! Please try again!');
+            failureAlert.fadeTo(2000, 500).slideUp(500, function () {
+                failureAlert.slideUp(500);
+            });
+        });
+        return result;
+    }
+
+    $('#update-member-btn').click(updateMember);
     function updateMember() {
 
         const form = $('#update-member-form');
@@ -41,7 +108,7 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: `/update/member/${$('.profile').attr('data-member-pk')}/`,
+            url: `/update/member/${$(this).attr('data-pk')}/`,
             data: formData,
             dataType: 'json'
         }).done(function (response) {
@@ -78,10 +145,13 @@ $(function () {
         });
     }
 
-    function addMember() {
+    // TRAINER CREATE AND UPDATE
+
+    $('#add-trainer-btn').click(addTrainer);
+    function addTrainer() {
 
         let result = false;
-        const form = $('#add-member-form');
+        const form = $('#add-trainer-form');
         const inputs = form.find('input, select, textarea');
         inputs.css('border-color', '#CED4DA');
         $('.invalid-input').hide();
@@ -91,27 +161,32 @@ $(function () {
             'last_name': form.find("input[name='last_name']").val(),
             'gender': form.find("select[name='gender'] option:selected").val(),
             'birth_date': form.find("input[name='birth_date']").val(),
-            'status': form.find("select[name='status']  option:selected").val(),
+            'status': form.find("select[name='status'] option:selected").val(),
             'mail': form.find("input[name='mail']").val(),
             'phone': form.find("input[name='phone']").val(),
+            'hourly_rate': form.find("input[name='hourly_rate']").val(),
+            'employment_type': form.find("select[name='employment_type'] option:selected").val(),
             'notes': form.find("textarea[name='notes']").val(),
         };
         $.ajax({
             type: 'POST',
-            url: '/create/member/',
+            url: '/create/trainer/',
             data: formData,
             dataType: 'json',
             async: false
         }).done(function (response) {
-            console.log(response);
             // validation passed
             if (response.result) {
                 form.trigger('reset');
                 result = true;
-                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Member has been successfully added');
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Trainer has been successfully added');
                 successAlert.fadeTo(2000, 500).slideUp(500, function () {
                     successAlert.slideUp(500);
                 });
+                if ($('#category').text() === 'TRAINERS') {
+                    warningAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Warning! </strong>Refresh page to view added trainer');
+                    warningAlert.fadeTo(2000, 500)
+                }
                 // validation not passed
             } else {
                 delete response['result'];
@@ -139,6 +214,194 @@ $(function () {
         });
         return result;
     }
+
+    $('#update-trainer-btn').click(updateTrainer);
+    function updateTrainer() {
+
+        const form = $('#update-trainer-form');
+        const formData = {
+            'csrfmiddlewaretoken': getCookie('csrftoken'),
+            'first_name': form.find("input[name='first_name']").val(),
+            'last_name': form.find("input[name='last_name']").val(),
+            'gender': form.find("select[name='gender'] option:selected").val(),
+            'birth_date': form.find("input[name='birth_date']").val(),
+            'status': form.find("select[name='status']  option:selected").val(),
+            'mail': form.find("input[name='mail']").val(),
+            'phone': form.find("input[name='phone']").val(),
+            'hourly_rate': form.find("input[name='hourly_rate']").val(),
+            'employment_type': form.find("select[name='employment_type'] option:selected").val(),
+            'notes': form.find("textarea[name='notes']").val(),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: `/update/trainer/${$(this).attr('data-pk')}/`,
+            data: formData,
+            dataType: 'json'
+        }).done(function (response) {
+            $('.invalid-input').hide();
+            const inputs = form.find('input, select, textarea');
+            if (response.result) {
+                inputs.css('border-color', '#CED4DA');
+                $('.upd-btn').hide();
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Member has been successfully updated');
+                successAlert.fadeTo(2000, 500).slideUp(500, function () {
+                    successAlert.slideUp(500);
+                });
+            } else {
+                delete response['result'];
+                inputs.css('border-color', '#00b000');
+                $.each(response, function (key, value) {
+                    const input = form.find(`[name='${key}']`);
+                    if ($.inArray(input.attr('name'), ['gender', 'status']) === 0) {
+                        input.parent().next().text(value);
+                        input.parent().css('border-color', '#FF0000');
+                        input.parent().next().show();
+                    } else {
+                        input.next().text(value);
+                        input.css('border-color', '#FF0000');
+                        input.next().show();
+                    }
+                });
+            }
+        }).fail(function () {
+            failureAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Failure! </strong>There was a problem with your request! Please try again!');
+            failureAlert.fadeTo(2000, 500).slideUp(500, function () {
+                failureAlert.slideUp(500);
+            });
+        });
+    }
+
+
+// GROUP CREATE AND UPDATE
+
+    $('#add-group-btn').click(addGroup);
+    function addGroup() {
+
+        let result = false;
+        const form = $('#add-group-form');
+        const inputs = form.find('input, select, textarea');
+        inputs.css('border-color', '#CED4DA');
+        $('.invalid-input').hide();
+        const formData = {
+            'csrfmiddlewaretoken': getCookie('csrftoken'),
+            'activity': form.find("select[name='activity'] option:selected").val(),
+            'trainer': form.find("select[name='trainer'] option:selected").val(),
+            'max_capacity': form.find("input[name='max_capacity']").val(),
+            'level': form.find("select[name='level'] option:selected").val(),
+            'color': form.find("input[name='color']").val(),
+            'class_time': form.find("input[name='class_time']").val(),
+            'days': form.find("select[name='days'] option:selected").val(),
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/create/group/',
+            data: formData,
+            dataType: 'json',
+            async: false
+        }).done(function (response) {
+            // validation passed
+            if (response.result) {
+                form.trigger('reset');
+                result = true;
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Group has been successfully added');
+                successAlert.fadeTo(2000, 500).slideUp(500, function () {
+                    successAlert.slideUp(500);
+                });
+                if ($('#category').text() === 'GROUPS') {
+                    warningAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Warning! </strong>Refresh page to view added group');
+                    warningAlert.fadeTo(2000, 500)
+                }
+                // validation not passed
+            } else {
+                delete response['result'];
+                form.find('input, select, textarea').css('border-color', '#00b000');
+                $('.invalid-input').hide();
+                $.each(response, function (key, value) {
+                    const input = form.find(`[name='${key}']`);
+                    if ($.inArray(input.attr('name'), ['gender', 'status']) === 0) {
+                        input.parent().next().text(value);
+                        input.parent().css('border-color', '#FF0000');
+                        input.parent().next().show();
+                    } else {
+                        input.next().text(value);
+                        input.css('border-color', '#FF0000');
+                        input.next().show();
+                    }
+                });
+            }
+        }).fail(function () {
+            result = true;
+            failureAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Failure! </strong>There was a problem with your request! Please try again!');
+            failureAlert.fadeTo(2000, 500).slideUp(500, function () {
+                failureAlert.slideUp(500);
+            });
+        });
+        return result;
+    }
+
+    $('#update-group-btn').click(updateGroup);
+    function updateGroup() {
+
+        const form = $('#update-group-form');
+        const formData = {
+            'csrfmiddlewaretoken': getCookie('csrftoken'),
+            'activity': form.find("select[name='activity'] option:selected").val(),
+            'trainer': form.find("select[name='trainer'] option:selected").val(),
+            'max_capacity': form.find("input[name='max_capacity']").val(),
+            'level': form.find("select[name='level'] option:selected").val(),
+            'color': form.find("input[name='color']").val(),
+            'class_time': form.find("input[name='class_time']").val(),
+            'days': form.find("select[name='days'] option:selected").val(),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: `/update/group/${$(this).attr('data-pk')}/`,
+            data: formData,
+            dataType: 'json'
+        }).done(function (response) {
+            $('.invalid-input').hide();
+            const inputs = form.find('input, select, textarea');
+            if (response.result) {
+                inputs.css('border-color', '#CED4DA');
+                $('.upd-btn').hide();
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Member has been successfully updated');
+                successAlert.fadeTo(2000, 500).slideUp(500, function () {
+                    successAlert.slideUp(500);
+                });
+            } else {
+                delete response['result'];
+                inputs.css('border-color', '#00b000');
+                $.each(response, function (key, value) {
+                    const input = form.find(`[name='${key}']`);
+                    if ($.inArray(input.attr('name'), ['gender', 'status']) === 0) {
+                        input.parent().next().text(value);
+                        input.parent().css('border-color', '#FF0000');
+                        input.parent().next().show();
+                    } else {
+                        input.next().text(value);
+                        input.css('border-color', '#FF0000');
+                        input.next().show();
+                    }
+                });
+            }
+        }).fail(function () {
+            failureAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Failure! </strong>There was a problem with your request! Please try again!');
+            failureAlert.fadeTo(2000, 500).slideUp(500, function () {
+                failureAlert.slideUp(500);
+            });
+        });
+    }
+
+
+
+
+
+
+
+
+
 
 
     // Handles update Product ajax call

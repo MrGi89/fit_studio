@@ -10,7 +10,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-
 from .models import Entry, Group, Member, Pass, Product, Trainer, Studio
 from .forms import LoginForm, UserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, StudioForm
 
@@ -354,6 +353,24 @@ class SettingsView(LoginRequiredMixin, View):
             return HttpResponseRedirect(reverse('home'))
 
         return render(request, template_name='control_panel/settings.html', context={'form': form})
+
+
+class GetLocationView(LoginRequiredMixin, View):
+
+    def get(self, request):
+
+        studio = get_object_or_404(Studio, pk=1)
+        if studio.lat is None or studio.lng is None:
+            raise Http404
+        return HttpResponse(json.dumps({'location': {'lat': studio.lat, 'lng': studio.lng}}))
+
+
+
+
+
+
+
+
 
 
 # class CreatePassView(LoginRequiredMixin, CreateView):

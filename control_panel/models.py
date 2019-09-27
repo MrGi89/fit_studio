@@ -1,6 +1,9 @@
+import googlemaps
+
 from datetime import date, datetime, timedelta
 from django.db import models
 from control_panel.widgets import ColorWidget
+from django.conf import settings
 
 GENDER = ((1, 'Kobieta'), (2, 'Mężczyzna'))
 TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
@@ -143,6 +146,20 @@ class Day(models.Model):
 
 class Studio(models.Model):
 
+    def save(self, *args, **kwargs):
+        if self.street and self.postal_code and self.city:
+
+            gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
+            # Geocoding an address
+            geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
+            raise geocode_result
+            response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA')
+            resp_json_payload = response.json()
+            print(resp_json_payload['results'][0]['geometry']['location'])
+
+        super(Studio, self).save(*args, **kwargs)
+
+
     name = models.CharField(max_length=100)
     company_name = models.CharField(max_length=200, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
@@ -152,6 +169,8 @@ class Studio(models.Model):
     regon = models.PositiveIntegerField(null=True, blank=True)
     mail = models.EmailField()
     phone = models.PositiveIntegerField(null=True, blank=True)
+    lat = models.DecimalField(decimal_places=8, max_digits=10, null=True, blank=True)
+    lng = models.DecimalField(decimal_places=8, max_digits=10, null=True, blank=True)
 
     def __str__(self):
         return self.name
