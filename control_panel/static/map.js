@@ -1,24 +1,30 @@
 let map;
 function initMap() {
-    console.log('jestem');
+
     const location = findLocation();
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: location,
-      zoom: 11
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: location.position,
+      zoom: location.zoom,
+    });
+    new google.maps.Marker({
+        position: location.position,
+        map: map
     });
   }
 
 function findLocation() {
 
-    let location = {lat: 52.237, lng: 21.017};
+    let position = {lat: 52.237, lng: 21.017};
+    let zoom = 11;
     $.ajax({
             type: 'GET',
             url: '/studio-location/',
             dataType: 'json',
             async: false
         }).done(function (response) {
-            location = response.location;
+            position = response.location;
+            zoom = 13
         });
-    return location
+    return {'position':position, 'zoom': zoom}
 
 }

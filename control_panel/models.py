@@ -150,15 +150,14 @@ class Studio(models.Model):
         if self.street and self.postal_code and self.city:
 
             gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
-            # Geocoding an address
-            geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
-            raise geocode_result
-            response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA')
-            resp_json_payload = response.json()
-            print(resp_json_payload['results'][0]['geometry']['location'])
-
+            geocode_result = gmaps.geocode('{} {}, {}'.format(self.postal_code, self.street, self.city))
+            try:
+                location = geocode_result[0]['geometry']['location']
+                self.lat = location.get('lat')
+                self.lng = location.get('lng')
+            except (IndexError, KeyError, TypeError):
+                pass
         super(Studio, self).save(*args, **kwargs)
-
 
     name = models.CharField(max_length=100)
     company_name = models.CharField(max_length=200, null=True, blank=True)
@@ -169,8 +168,8 @@ class Studio(models.Model):
     regon = models.PositiveIntegerField(null=True, blank=True)
     mail = models.EmailField()
     phone = models.PositiveIntegerField(null=True, blank=True)
-    lat = models.DecimalField(decimal_places=8, max_digits=10, null=True, blank=True)
-    lng = models.DecimalField(decimal_places=8, max_digits=10, null=True, blank=True)
+    lat = models.CharField(max_length=50, null=True, blank=True)
+    lng = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.name

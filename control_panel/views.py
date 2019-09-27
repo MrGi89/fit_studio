@@ -362,7 +362,7 @@ class GetLocationView(LoginRequiredMixin, View):
         studio = get_object_or_404(Studio, pk=1)
         if studio.lat is None or studio.lng is None:
             raise Http404
-        return HttpResponse(json.dumps({'location': {'lat': studio.lat, 'lng': studio.lng}}))
+        return HttpResponse(json.dumps({'location': {'lat': float(studio.lat), 'lng': float(studio.lng)}}))
 
 
 
