@@ -7,7 +7,7 @@
                 <div class="profile-info">
                     <div class="profile-boxes">
                         <div>
-                            <a href="mailto:{% for member in group.members.all %}{{ member.mail }}{% endfor %}?subject=Mail from Fit Studio">
+                            <a href="mailto:{% for member in group.members.all %}{{ member.mail }};{% endfor %}?subject=Mail from Fit Studio">
                                 <i class="fas fa-envelope"></i>
                             </a>
                             <small>Send group<br>message</small>
