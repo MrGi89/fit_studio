@@ -55,7 +55,7 @@ class GroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for field_name in ['color', 'max_capacity', 'activity', 'trainer', 'days', 'class_time', 'level']:
+        for field_name in ['color', 'max_capacity', 'activity', 'days', 'trainer', 'class_time', 'level']:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
 
         self.fields['days'].widget.attrs.update({'size': 7})
@@ -63,6 +63,18 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         exclude = ('members',)
+
+
+class GroupMemberForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['members'].widget.attrs.update({'class': 'form-control'})
+
+    class Meta:
+        model = Group
+        fields = ('members',)
 
 
 class ProductForm(forms.ModelForm):

@@ -11,7 +11,9 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Entry, Group, Member, Pass, Product, Trainer, Studio
-from .forms import LoginForm, UserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, StudioForm
+from .forms import LoginForm, UserForm, MemberForm, TrainerForm, ProductForm, PassForm, GroupForm, StudioForm, \
+    GroupMemberForm
+
 
 # TODO search_query for choseField
 
@@ -270,10 +272,12 @@ class GroupView(LoginRequiredMixin, View):
     def get(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
         form = GroupForm(instance=group)
+        members_form = GroupMemberForm(instance=group)
         return render(request,
                       template_name='control_panel/group.html',
                       context={'group': group,
-                               'form': form})
+                               'form': form,
+                               'members_form': members_form})
 
 
 class ProductsView(LoginRequiredMixin, View):
@@ -312,7 +316,7 @@ class CalendarView(LoginRequiredMixin, View):
     def get(self, request):
 
         calendar = dict()
-        for hour in sorted(Group.objects.values_list('class_time', flat=True)):
+        for hour in sorted(Group.objects.values_list('class_time', flat=True).distinct()):
             calendar[hour] = {'Monday': list(),
                               'Tuesday': list(),
                               'Wednesday': list(),

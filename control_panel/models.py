@@ -5,14 +5,14 @@ from django.db import models
 from control_panel.widgets import ColorWidget
 from django.conf import settings
 
-GENDER = ((1, 'Kobieta'), (2, 'Mężczyzna'))
-TYPE_OF_STATUS = ((1, 'Aktywny'), (2, 'Nieaktywny'))
-TYPE_OF_EMPLOYMENT = ((1, 'UoP'), (2, 'UoZ'), (3, 'UoD'), (4, 'B2B'))
-TYPE_OF_LEVEL = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
-TYPE_OF_PRODUCT = ((1, 'Karnet'), (2, 'Karta'), (3, 'Wejściówka'))
-TYPE_OF_PARTNER = ((1, 'Multisport'), (2, 'Fit-Profit'), (3, 'OK System'))
-TYPE_OF_ACTIVITIES = ((1, 'Pole Dance'), (2, 'Exotic'), (3, 'Stretching'), (4, 'Jumping'))
-COLORS = ((1, 'green'), (2, 'red'), (3, 'black'), (4, 'yellow'), (5, 'blue'))
+GENDER_CHOICES = ((1, 'Kobieta'), (2, 'Mężczyzna'))
+STATUS_CHOICES = ((1, 'Aktywny'), (2, 'Nieaktywny'))
+EMPLOYMENT_CHOICES = ((1, 'UoP'), (2, 'UoZ'), (3, 'UoD'), (4, 'B2B'))
+LEVEL_CHOICES = ((1, 'Podstawowa'), (2, 'Średnio-zaawansowana'), (3, 'Zaawansowana'))
+PRODUCT_CHOICES = ((1, 'Karnet'), (2, 'Karta'), (3, 'Wejściówka'))
+PARTNER_CHOICES = ((1, 'Multisport'), (2, 'Fit-Profit'), (3, 'OK System'))
+ACTIVITY_CHOICES = ((1, 'Pole Dance'), (2, 'Exotic'), (3, 'Stretching'), (4, 'Jumping'))
+COLOR_CHOICES = ((1, 'green'), (2, 'red'), (3, 'black'), (4, 'yellow'), (5, 'blue'))
 
 
 class ColorField(models.CharField):
@@ -26,14 +26,13 @@ class ColorField(models.CharField):
 
 
 class Member(models.Model):
-    # TODO make phone, email required
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     birth_date = models.DateField(null=True, blank=True)
-    gender = models.SmallIntegerField(choices=GENDER, default=1)
-    phone = models.IntegerField(null=True, blank=True)
-    mail = models.EmailField(unique=True, null=True, blank=True)
-    status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
+    gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES, default=1)
+    phone = models.IntegerField()
+    mail = models.EmailField(unique=True)
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='user_img/', default='user_img/default.jpg')
     created = models.DateTimeField(auto_now_add=True)
@@ -47,24 +46,24 @@ class Trainer(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     birth_date = models.DateField(null=True, blank=True)
-    gender = models.SmallIntegerField(choices=GENDER, default=1)
+    gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES, default=1)
     phone = models.IntegerField()
     mail = models.EmailField(unique=True, null=True, blank=True)
-    status = models.SmallIntegerField(choices=TYPE_OF_STATUS, default=1)
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     notes = models.TextField(null=True, blank=True)
     img = models.ImageField(upload_to='trainer_img/', default='trainer_img/default.jpg')
     hourly_rate = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
-    employment_type = models.SmallIntegerField(choices=TYPE_OF_EMPLOYMENT, default=1)
+    employment_type = models.PositiveSmallIntegerField(choices=EMPLOYMENT_CHOICES, default=1)
 
     def __str__(self):
         return '{} {}'.format(self.last_name.capitalize(), self.first_name.capitalize())
 
 
 class Product(models.Model):
-    type = models.SmallIntegerField(choices=TYPE_OF_PRODUCT)
+    type = models.PositiveSmallIntegerField(choices=PRODUCT_CHOICES)
     activity = models.ForeignKey('Activity', models.CASCADE, related_name='products')
-    partner_name = models.SmallIntegerField(choices=TYPE_OF_PARTNER, blank=True, null=True)
-    validity = models.IntegerField(blank=True, null=True)
+    partner_name = models.PositiveSmallIntegerField(choices=PARTNER_CHOICES, blank=True, null=True)
+    validity = models.PositiveSmallIntegerField(blank=True, null=True)
     available_entries = models.IntegerField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -91,7 +90,7 @@ class Activity(models.Model):
 
 class Group(models.Model):
 
-    level = models.SmallIntegerField(choices=TYPE_OF_LEVEL, default=1)
+    level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES, default=1)
     color = ColorField(unique=True)
     max_capacity = models.IntegerField()
     activity = models.ForeignKey(Activity, models.CASCADE, related_name='groups')

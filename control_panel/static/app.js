@@ -20,6 +20,16 @@ $(function () {
         price.val(product.attr(`data-product-${product.find("option:selected").val()}`));
     });
 
+    $('option').click(function () {
+        console.log('jest klik')
+        if ($(this).is(':selected')) {
+            $(this).removeAttr("selected");
+        } else {
+            $(this).attr("selected", "selected");
+        }
+    })
+
+
     // Handles first-col slide
     // $(window).scroll(function () {
     //     $(".side-bar").stop().animate({

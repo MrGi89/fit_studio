@@ -366,7 +366,7 @@ $(function () {
             if (response.result) {
                 inputs.css('border-color', '#CED4DA');
                 $('.upd-btn').hide();
-                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Member has been successfully updated');
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Group has been successfully updated');
                 successAlert.fadeTo(2000, 500).slideUp(500, function () {
                     successAlert.slideUp(500);
                 });
@@ -394,21 +394,79 @@ $(function () {
         });
     }
 
+// PRODUCT CREATE AND UPDATE
 
+    $('#add-product-btn').click(addProduct);
+    function addProduct() {
 
-
-
-
-
-
-
-
+        let result = false;
+        const form = $('#add-product-form');
+        const inputs = form.find('input, select, textarea');
+        inputs.css('border-color', '#CED4DA');
+        $('.invalid-input').hide();
+        const formData = {
+            'csrfmiddlewaretoken': getCookie('csrftoken'),
+            'type': form.find("select[name='type'] option:selected").val(),
+            'activity': form.find("select[name='activity'] option:selected").val(),
+            'partner_name': form.find("select[name='partner_name'] option:selected").val(),
+            'validity': form.find("input[name='validity']").val(),
+            'available_entries': form.find("input[name='available_entries']").val(),
+            'price': form.find("input[name='price']").val(),
+            'deposit': form.find("input[name='deposit']").val(),
+            'entry_surcharge': form.find("input[name='entry_surcharge']").val(),
+            'absence_surcharge': form.find("input[name='absence_surcharge']").val(),
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/create/product/',
+            data: formData,
+            dataType: 'json',
+            async: false
+        }).done(function (response) {
+            // validation passed
+            if (response.result) {
+                form.trigger('reset');
+                result = true;
+                successAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Success! </strong>Product has been successfully added');
+                successAlert.fadeTo(2000, 500).slideUp(500, function () {
+                    successAlert.slideUp(500);
+                });
+                if ($('#category').text() === 'PRODUCTS') {
+                    warningAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Warning! </strong>Refresh page to view added product');
+                    warningAlert.fadeTo(2000, 500)
+                }
+                // validation not passed
+            } else {
+                delete response['result'];
+                form.find('input, select, textarea').css('border-color', '#00b000');
+                $('.invalid-input').hide();
+                $.each(response, function (key, value) {
+                    const input = form.find(`[name='${key}']`);
+                    if ($.inArray(input.attr('name'), ['gender', 'status']) === 0) {
+                        input.parent().next().text(value);
+                        input.parent().css('border-color', '#FF0000');
+                        input.parent().next().show();
+                    } else {
+                        input.next().text(value);
+                        input.css('border-color', '#FF0000');
+                        input.next().show();
+                    }
+                });
+            }
+        }).fail(function () {
+            result = true;
+            failureAlert.html('<button type="button" class="close" data-dismiss="alert">x</button><strong>Failure! </strong>There was a problem with your request! Please try again!');
+            failureAlert.fadeTo(2000, 500).slideUp(500, function () {
+                failureAlert.slideUp(500);
+            });
+        });
+        return result;
+    }
 
     // Handles update Product ajax call
 
     const productUpdateBtn = $('.update-product-btn');
     productUpdateBtn.click(updateProduct);
-
 
     function updateProduct() {
 
